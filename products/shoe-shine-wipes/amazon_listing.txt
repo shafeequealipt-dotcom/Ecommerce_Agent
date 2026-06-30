@@ -1,0 +1,17 @@
+=== AMAZON Listing ===
+
+title: Anleshi Shoe Shine Wipes 80 Series Pack of 2
+
+item_highlights: QUICK CLEANING ANYTIME, ANYWHERE! | SAFE FOR ALL SHOES | INSTANT SHINE
+
+bullets:
+  - CLEANS DIRTY SHOES IN SECONDS
+  - SAFE FOR LEATHER, CLOTH, AND SYNTHETIC UPPERS
+  - NO MESS - JUST WIPE & SHINE
+  - COMPACT PACK - 80 WIPES PER PACK
+  - TRAVEL-FRIENDLY DESIGN
+
+description: Anleshi's Powerful 3-in-1 Formula removes dirt, stains, and restores shine to all shoe materials. Perfect for quick cleaning between walks, commutes, or travel. 80 wipes per pack - always have clean shoes ready!
+
+backend_keywords: shoe cleaner wipes, shoe polish wipes, shoe care kit, shoe shine pack, shoe maintenance, shoe cleaning supplies, shoe restoration wipes, shoe care travel kit
+

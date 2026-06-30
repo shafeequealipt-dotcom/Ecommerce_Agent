@@ -1,0 +1,17 @@
+=== AMAZON Listing ===
+
+title: EcoBrush Kids Toothbrush Set - Set of 4 (Blue & Pink)
+
+item_highlights: Set of 4 colorful toothbrushes for children - Soft bristles & ergonomic handles
+
+bullets:
+  - SOFT BRistles for gentle cleaning
+  - ERgonomic handles for easy grip
+  - Multi-color design appeals to children
+  - Set of 4 promotes hygiene habits
+  - Durable and easy to clean
+
+description: Introducing EcoBrush Kids Toothbrush Set - a vibrant set of 4 toothbrushes designed specifically for children. Each toothbrush features soft bristles for gentle cleaning and an ergonomic handle for easy grip. The multi-color design in blue and pink makes brushing time fun and engaging for kids. This set promotes good oral hygiene habits from a young age.
+
+backend_keywords: kids toothbrush set, children toothbrush, colorful toothbrush, soft bristle toothbrush, ergonomic toothbrush for kids
+

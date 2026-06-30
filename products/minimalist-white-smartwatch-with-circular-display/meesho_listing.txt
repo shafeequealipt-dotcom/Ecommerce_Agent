@@ -1,0 +1,8 @@
+=== MEESHO Listing ===
+
+title: Stylish White Smartwatch for Men & Women
+
+description: Beautiful white smartwatch with circular display. Very comfortable and lightweight for daily use.
+
+attributes: {'Color': 'White', 'Material': 'Silicone', 'Type': 'Smartwatch', 'Gender': 'Unisex'}
+

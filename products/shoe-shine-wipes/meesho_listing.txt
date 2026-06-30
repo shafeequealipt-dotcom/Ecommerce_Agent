@@ -1,0 +1,8 @@
+=== MEESHO Listing ===
+
+title: Anleshi Shoe Shine Wipes
+
+description: Powerful 3-in-1 Shoe Cleaning Wipes - Safe for All Materials - 80 Wipes per Pack
+
+attributes: {'color': 'Black', 'package_size': '12x9x3 cm', 'net_weight': '180g', 'quantity_per_pack': '80'}
+

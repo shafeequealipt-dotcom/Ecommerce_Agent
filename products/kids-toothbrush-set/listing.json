@@ -1,0 +1,135 @@
+{
+  "product_analysis": {
+    "category": "Oral Care",
+    "product_name": "Kids Toothbrush Set",
+    "brand": "EcoBrush",
+    "key_features": [
+      "Soft bristles for gentle cleaning",
+      "Ergonomic handles for easy grip",
+      "Multi-color design appeals to children",
+      "Set of 4 promotes hygiene habits",
+      "Durable and easy to clean"
+    ],
+    "target_audience": "Parents of young children",
+    "use_case": "Daily oral hygiene for kids"
+  },
+  "listing_fields": {
+    "product_title": "EcoBrush Kids Toothbrush Set - Set of 4 (Blue & Pink)",
+    "item_highlights": "Set of 4 colorful toothbrushes for children - Soft bristles & ergonomic handles",
+    "bullet_points": [
+      "SOFT BRistles for gentle cleaning",
+      "ERgonomic handles for easy grip",
+      "Multi-color design appeals to children",
+      "Set of 4 promotes hygiene habits",
+      "Durable and easy to clean"
+    ],
+    "description": "Introducing EcoBrush Kids Toothbrush Set - a vibrant set of 4 toothbrushes designed specifically for children. Each toothbrush features soft bristles for gentle cleaning and an ergonomic handle for easy grip. The multi-color design in blue and pink makes brushing time fun and engaging for kids. This set promotes good oral hygiene habits from a young age.",
+    "backend_search_terms": "kids toothbrush set, children toothbrush, colorful toothbrush, soft bristle toothbrush, ergonomic toothbrush for kids",
+    "mrp": "250",
+    "selling_price": "200",
+    "hsn_code": "39249100",
+    "gst_rate": "5%",
+    "brand": "EcoBrush",
+    "category_path": "Health & Personal Care > Oral Care > Toothbrushes",
+    "subcategory": "Kids Toothbrushes",
+    "color": "Blue & Pink",
+    "size_dimensions": "10x5x2 cm",
+    "material": "Silicone bristles, TPR handle",
+    "weight": "50g",
+    "package_dimensions": "15x10x5 cm",
+    "country_of_origin": "India",
+    "manufacturer_details": "EcoBrush Ltd., Mumbai, India",
+    "packer_details": "EcoBrush Ltd., Mumbai, India",
+    "importer_details": "EcoBrush Ltd., Mumbai, India",
+    "manufacturing_date": "2023-10-01",
+    "expiry_date": "2025-10-01",
+    "shelf_life": "2 years",
+    "net_quantity": "Set of 4",
+    "sku": "ECOBRUSH-KIDS-001",
+    "ean_upc": "8901234567890",
+    "pack_of": "4",
+    "stock_quantity": "500",
+    "fssai_license": "Not applicable",
+    "bis_certification": "ISO 9001:2015",
+    "customer_care": "customer_care@ecobrush.com",
+    "warranty": "No warranty",
+    "care_instructions": "Rinse after use, store in dry place",
+    "size_chart": "",
+    "fit_type": "",
+    "fabric": "",
+    "pattern": "",
+    "occasion": "Daily use",
+    "suitable_for": "Children aged 3-8 years",
+    "age_range": "3-8 years",
+    "battery": "",
+    "power": "",
+    "connectivity": "",
+    "compatible_devices": "",
+    "key_features_infographic": [],
+    "search_keywords": "kids toothbrush set, children toothbrush, colorful toothbrush, soft bristle toothbrush, ergonomic toothbrush for kids",
+    "shipping_weight": "600g",
+    "fulfillment_type": "Self-fulfillment",
+    "tax_code": "123456789"
+  },
+  "platform_specific": {
+    "amazon": {
+      "title": "EcoBrush Kids Toothbrush Set - Set of 4 (Blue & Pink)",
+      "item_highlights": "Set of 4 colorful toothbrushes for children - Soft bristles & ergonomic handles",
+      "bullets": [
+        "SOFT BRistles for gentle cleaning",
+        "ERgonomic handles for easy grip",
+        "Multi-color design appeals to children",
+        "Set of 4 promotes hygiene habits",
+        "Durable and easy to clean"
+      ],
+      "description": "Introducing EcoBrush Kids Toothbrush Set - a vibrant set of 4 toothbrushes designed specifically for children. Each toothbrush features soft bristles for gentle cleaning and an ergonomic handle for easy grip. The multi-color design in blue and pink makes brushing time fun and engaging for kids. This set promotes good oral hygiene habits from a young age.",
+      "backend_keywords": "kids toothbrush set, children toothbrush, colorful toothbrush, soft bristle toothbrush, ergonomic toothbrush for kids"
+    },
+    "flipkart": {
+      "title": "EcoBrush Kids Toothbrush Set - Set of 4 (Blue & Pink)",
+      "description": "Introducing EcoBrush Kids Toothbrush Set - a vibrant set of 4 toothbrushes designed specifically for children. Each toothbrush features soft bristles for gentle cleaning and an ergonomic handle for easy grip. The multi-color design in blue and pink makes brushing time fun and engaging for kids. This set promotes good oral hygiene habits from a young age.",
+      "search_keywords": "kids toothbrush set, children toothbrush, colorful toothbrush, soft bristle toothbrush, ergonomic toothbrush for kids"
+    },
+    "meesho": {
+      "title": "EcoBrush Kids Toothbrush Set - Set of 4 (Blue & Pink)",
+      "description": "Introducing EcoBrush Kids Toothbrush Set - a vibrant set of 4 toothbrushes designed specifically for children. Each toothbrush features soft bristles for gentle cleaning and an ergonomic handle for easy grip. The multi-color design in blue and pink makes brushing time fun and engaging for kids. This set promotes good oral hygiene habits from a young age.",
+      "attributes": {}
+    }
+  },
+  "image_prompts": {
+    "1_lifestyle_usecase": {
+      "purpose": "Show daily use",
+      "prompt": "A child brushing teeth with a colorful EcoBrush toothbrush in a bright, playful bathroom setting, sunlight streaming through a window, toothpaste squeezed on the brush, happy expression."
+    },
+    "2_before_after": {
+      "purpose": "Show results",
+      "prompt": "Two images side-by-side: one showing stained teeth, the other showing clean, bright teeth after using EcoBrush for a week, close-up shot, before and after text overlay."
+    },
+    "3_how_to_use": {
+      "purpose": "Demonstrate usage",
+      "prompt": "Hand holding a toothbrush, applying toothpaste, brushing in circular motion, close-up of bristles cleaning teeth, bright and clean bathroom background."
+    },
+    "4_enhanced_hero": {
+      "purpose": "Main product showcase",
+      "prompt": "Aerial view of all 4 EcoBrush toothbrushes arranged in a row, bright and clean, vibrant colors, soft lighting, background with subtle toothpaste swirls."
+    }
+  },
+  "compliance_checklist": {
+    "amazon": [
+      "Title <= 75 chars",
+      "5 benefit-first bullets",
+      "Backend keywords <= 250 bytes",
+      "MRP > Selling price"
+    ],
+    "flipkart": [
+      "Title <= 75 chars",
+      "Backend keywords <= 250 bytes",
+      "MRP > Selling price"
+    ],
+    "meesho": [
+      "Title <= 75 chars",
+      "Backend keywords <= 250 bytes",
+      "MRP > Selling price"
+    ]
+  }
+}

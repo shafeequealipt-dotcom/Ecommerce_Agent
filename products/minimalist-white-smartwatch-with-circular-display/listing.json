@@ -1,0 +1,142 @@
+{
+  "product_analysis": {
+    "category": "Smartwatches",
+    "product_name": "Minimalist White Smartwatch with Circular Display",
+    "brand": "Generic",
+    "key_features": [
+      "Sleek circular black display",
+      "Minimalist white silicone strap",
+      "Lightweight design",
+      "Modern aesthetic",
+      "Durable buckle closure"
+    ],
+    "target_audience": "Fitness enthusiasts, fashion-forward youth, minimalists",
+    "use_case": "Daily wear, fitness tracking, casual outings"
+  },
+  "listing_fields": {
+    "product_title": "Minimalist White Smartwatch with Circular Black Display",
+    "item_highlights": "Sleek Design | Lightweight Silicone Strap | Circular Touchscreen | Modern Aesthetic",
+    "bullet_points": [
+      "MODERN MINIMALIST DESIGN: Features a stunning circular black display paired with a clean white strap for a premium, contemporary look.",
+      "ULTRA-LIGHTWEIGHT COMFORT: Crafted with a soft-touch silicone strap that ensures all-day comfort during workouts or casual wear.",
+      "DURABLE BUILD QUALITY: Built with high-quality materials to withstand daily usage while maintaining its elegant aesthetic.",
+      "VERSATILE STYLING: The neutral white and black color palette makes it perfect to pair with both ethnic and western outfits.",
+      "EASY TO WEAR: Equipped with a secure, adjustable buckle mechanism for a perfect fit on any wrist size."
+    ],
+    "description": "Elevate your wrist game with our Minimalist White Smartwatch. Designed for those who appreciate simplicity and elegance, this smartwatch features a striking circular black display that contrasts beautifully with the pure white silicone strap. Whether you are heading to the gym, a business meeting, or a casual brunch, its lightweight and ergonomic design ensures maximum comfort. A perfect blend of technology and fashion, this watch is a must-have accessory for the modern individual.",
+    "backend_search_terms": "smartwatch white silicone strap circular display fitness tracker men women unisex smartwatch minimal aesthetic smart band tech accessories",
+    "mrp": "2999",
+    "selling_price": "1499",
+    "hsn_code": "8517",
+    "gst_rate": "18%",
+    "brand": "Generic",
+    "category_path": "Electronics > Wearable Technology > Smartwatches",
+    "subcategory": "Smartwatches",
+    "color": "White",
+    "size_dimensions": "Standard Wrist Size",
+    "material": "Silicone & High-grade Polymer",
+    "weight": "50g",
+    "package_dimensions": "15 x 10 x 5 cm",
+    "country_of_origin": "India",
+    "manufacturer_details": "Generic Electronics Pvt Ltd, Bangalore, India",
+    "packer_details": "Generic Logistics, Mumbai, India",
+    "importer_details": "N/A",
+    "manufacturing_date": "October 2023",
+    "expiry_date": "N/A",
+    "shelf_life": "N/A",
+    "net_quantity": "1 Unit",
+    "sku": "SMW-WHT-001",
+    "ean_upc": "8901234567890",
+    "pack_of": "1",
+    "stock_quantity": "100",
+    "fssai_license": "N/A",
+    "bis_certification": "Available",
+    "customer_care": "support@genericbrand.in",
+    "warranty": "1 Year Manufacturer Warranty",
+    "care_instructions": "Wipe with a soft, dry cloth. Avoid direct contact with strong chemicals or perfume.",
+    "size_chart": "Adjustable Strap: 14cm to 21cm circumference",
+    "fit_type": "Regular Fit",
+    "fabric": "N/A",
+    "pattern": "Solid",
+    "occasion": "Casual, Sports, Formal",
+    "suitable_for": "Men, Women, Unisex",
+    "age_range": "13+ years",
+    "battery": "Rechargeable Lithium-ion",
+    "power": "USB Charging",
+    "connectivity": "Bluetooth",
+    "compatible_devices": "Android, iOS",
+    "key_features_infographic": [
+      "Circular Display Highlight",
+      "Soft Silicone Texture",
+      "Lightweight Feel",
+      "Easy Buckle System"
+    ],
+    "search_keywords": "white smartwatch, minimal watch, circular display smartwatch, silicone strap watch, trendy smartwatch india",
+    "shipping_weight": "150g",
+    "fulfillment_type": "Merchant Fulfilled",
+    "tax_code": "GST-18"
+  },
+  "platform_specific": {
+    "amazon": {
+      "title": "Minimalist White Smartwatch with Circular Black Display",
+      "item_highlights": "Sleek Design | Lightweight Silicone Strap | Circular Touchscreen",
+      "bullets": [
+        "MODERN MINIMALIST DESIGN: Features a stunning circular black display paired with a clean white strap.",
+        "ULTRA-LIGHTWEIGHT COMFORT: Crafted with a soft-touch silicone strap for all-day comfort.",
+        "DURABLE BUILD QUALITY: High-quality materials for long-lasting daily use.",
+        "VERSATILE STYLING: Perfect for both ethnic and western outfits.",
+        "EASY TO WEAR: Secure, adjustable buckle mechanism for a perfect fit."
+      ],
+      "description": "Elevate your style with our Minimalist White Smartwatch. A perfect blend of technology and fashion designed for modern lifestyle.",
+      "backend_keywords": "smartwatch white silicone strap circular display fitness tracker men women unisex"
+    },
+    "flipkart": {
+      "title": "Generic White Smartwatch (Circular Display, White)",
+      "description": "Upgrade your lifestyle with this elegant white smartwatch. It features a sleek circular black screen and a comfortable silicone strap, making it ideal for both fitness and fashion.",
+      "search_keywords": "smartwatch, white watch, fitness band, circular smartwatch, stylish watch"
+    },
+    "meesho": {
+      "title": "Stylish White Smartwatch for Men & Women",
+      "description": "Beautiful white smartwatch with circular display. Very comfortable and lightweight for daily use.",
+      "attributes": {
+        "Color": "White",
+        "Material": "Silicone",
+        "Type": "Smartwatch",
+        "Gender": "Unisex"
+      }
+    }
+  },
+  "image_prompts": {
+    "1_lifestyle_usecase": {
+      "purpose": "Show the product in a real-world setting to build desire.",
+      "prompt": "Photorealistic lifestyle shot of a stylish young woman wearing a minimalist white smartwatch on her wrist while holding a coffee cup in a bright, modern cafe. Natural sunlight, soft bokeh background, 1:1 aspect ratio, high resolution."
+    },
+    "2_before_after": {
+      "purpose": "Demonstrate the aesthetic upgrade.",
+      "prompt": "Split screen comparison. Left side: A plain, boring wrist with an old bulky black watch. Right side: The same wrist looking elegant and modern wearing the minimalist white smartwatch. High-end fashion photography style, 1:1 aspect ratio."
+    },
+    "3_how_to_use": {
+      "purpose": "Show ease of adjustment/wear.",
+      "prompt": "Close-up shot of hands adjusting the white silicone strap of the smartwatch. Focus on the buckle mechanism and the texture of the silicone. Clean, studio lighting, white background, 1:1 aspect ratio."
+    },
+    "4_enhanced_hero": {
+      "purpose": "Premium studio presentation.",
+      "prompt": "Premium studio product photography of the white smartwatch floating slightly above a clean white marble surface. Soft dramatic shadows, cinematic lighting, highlighting the circular black glass display, 1:1 aspect ratio, 8k resolution."
+    }
+  },
+  "compliance_checklist": {
+    "amazon": [
+      "Title under 75 chars",
+      "5 Benefit-driven bullets with CAPS",
+      "Backend keywords optimized"
+    ],
+    "flipkart": [
+      "Title optimized for search",
+      "Clear description provided"
+    ],
+    "meesho": [
+      "Simple, catchy title",
+      "Essential attributes included"
+    ]
+  }
+}

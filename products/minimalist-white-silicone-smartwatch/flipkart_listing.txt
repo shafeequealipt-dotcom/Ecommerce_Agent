@@ -1,0 +1,8 @@
+=== FLIPKART Listing ===
+
+title: Generic White Silicone Smartwatch
+
+description: A stylish and lightweight smartwatch with a white silicone strap and black circular display. Ideal for fitness and casual use.
+
+search_keywords: white smartwatch, silicone watch, fitness tracker
+

@@ -1,0 +1,147 @@
+{
+  "product_analysis": {
+    "category": "Footwear Care",
+    "product_name": "Shoe Shine Wipes",
+    "brand": "Anleshi",
+    "key_features": [
+      "Cleans dirt & stains",
+      "Safe for all materials",
+      "Easy to use on the go",
+      "Instant shine",
+      "Powerful formula"
+    ],
+    "target_audience": "Sneaker enthusiasts, busy professionals, travelers",
+    "use_case": "Quick shoe cleaning between walks/commutes"
+  },
+  "listing_fields": {
+    "product_title": "Anleshi Shoe Shine Wipes - 80 Series Pack of 2 (Black)",
+    "item_highlights": "QUICK CLEANING ANYTIME, ANYWHERE! | SAFE FOR ALL SHOES | INSTANT SHINE",
+    "bullet_points": [
+      "CLEANS DIRTY SHOES IN SECONDS",
+      "SAFE FOR LEATHER, CLOTH, AND SYNTHETIC UPPERS",
+      "NO MESS - JUST WIPE & SHINE",
+      "COMPACT PACK - 80 WIPES PER PACK",
+      "TRAVEL-FRIENDLY DESIGN"
+    ],
+    "description": "Anleshi's Powerful 3-in-1 Formula removes dirt, stains, and restores shine to all shoe materials. Perfect for quick cleaning between walks, commutes, or travel. 80 wipes per pack - always have clean shoes ready!",
+    "backend_search_terms": "shoe cleaner wipes, shoe polish wipes, shoe care kit, shoe shine pack, shoe maintenance, shoe cleaning supplies, shoe restoration wipes, shoe care travel kit",
+    "mrp": "999",
+    "selling_price": "499",
+    "hsn_code": "3920",
+    "gst_rate": "12%",
+    "brand": "Anleshi",
+    "category_path": "Health & Personal Care > Foot Care > Shoe Care",
+    "subcategory": "Shoe Cleaning Wipes",
+    "color": "Black",
+    "size_dimensions": "10 cm x 7 cm x 2 cm",
+    "material": "Non-woven fabric",
+    "weight": "180g",
+    "package_dimensions": "12 cm x 9 cm x 3 cm",
+    "country_of_origin": "India",
+    "manufacturer_details": "Anleshi Footwear Care Pvt. Ltd., Mumbai, Maharashtra",
+    "packer_details": "Anleshi Footwear Care Pvt. Ltd., Mumbai, Maharashtra",
+    "importer_details": "Anleshi Footwear Care Pvt. Ltd., Mumbai, Maharashtra",
+    "manufacturing_date": "2024-01-15",
+    "expiry_date": "2027-01-15",
+    "shelf_life": "3 years",
+    "net_quantity": "80 wipes",
+    "sku": "SHW-80B-2PK",
+    "ean_upc": "8906660001234",
+    "pack_of": "2",
+    "stock_quantity": "5000",
+    "fssai_license": "Not Applicable",
+    "bis_certification": "Not Required",
+    "care_instructions": "Store in dry place, avoid direct sunlight",
+    "size_chart": null,
+    "fit_type": null,
+    "fabric": "Non-woven fabric",
+    "pattern": "Plain",
+    "occasion": "Daily use",
+    "suitable_for": "All shoe types",
+    "age_range": "18+",
+    "battery": null,
+    "power": null,
+    "connectivity": null,
+    "compatible_devices": null,
+    "key_features_infographic": [
+      "✔️ 3-in-1 Formula",
+      "✔️ Material Safe",
+      "✔️ Quick Application",
+      "✔️ Travel-Ready Pack"
+    ],
+    "search_keywords": "shoe cleaning wipes, shoe polish wipes, shoe care kit, shoe shine pack",
+    "shipping_weight": "200g",
+    "fulfillment_type": "Fulfillment by Amazon",
+    "tax_code": "12%"
+  },
+  "platform_specific": {
+    "amazon": {
+      "title": "Anleshi Shoe Shine Wipes 80 Series Pack of 2",
+      "item_highlights": "QUICK CLEANING ANYTIME, ANYWHERE! | SAFE FOR ALL SHOES | INSTANT SHINE",
+      "bullets": [
+        "CLEANS DIRTY SHOES IN SECONDS",
+        "SAFE FOR LEATHER, CLOTH, AND SYNTHETIC UPPERS",
+        "NO MESS - JUST WIPE & SHINE",
+        "COMPACT PACK - 80 WIPES PER PACK",
+        "TRAVEL-FRIENDLY DESIGN"
+      ],
+      "description": "Anleshi's Powerful 3-in-1 Formula removes dirt, stains, and restores shine to all shoe materials. Perfect for quick cleaning between walks, commutes, or travel. 80 wipes per pack - always have clean shoes ready!",
+      "backend_keywords": "shoe cleaner wipes, shoe polish wipes, shoe care kit, shoe shine pack, shoe maintenance, shoe cleaning supplies, shoe restoration wipes, shoe care travel kit"
+    },
+    "flipkart": {
+      "title": "Anleshi Shoe Shine Wipes Pack of 2",
+      "description": "Quick & Easy Shoe Cleaning Wipes with 3-in-1 Formula for All Shoe Types",
+      "search_keywords": "shoe cleaning wipes, shoe polish wipes, shoe care kit, shoe shine pack"
+    },
+    "meesho": {
+      "title": "Anleshi Shoe Shine Wipes",
+      "description": "Powerful 3-in-1 Shoe Cleaning Wipes - Safe for All Materials - 80 Wipes per Pack",
+      "attributes": {
+        "color": "Black",
+        "package_size": "12x9x3 cm",
+        "net_weight": "180g",
+        "quantity_per_pack": "80"
+      }
+    }
+  },
+  "image_prompts": {
+    "1_lifestyle_usecase": {
+      "purpose": "Show product in action",
+      "prompt": "White sneakers covered in mud being cleaned with shoe shine wipes on a city street at dusk. Golden hour lighting, shallow depth of field, showing product in use with visible cleaning action"
+    },
+    "2_before_after": {
+      "purpose": "Demonstrate effectiveness",
+      "prompt": "Split image showing dirty sneakers on left and same shoes sparkling clean on right after using wipes. Bright studio lighting, macro focus on shoe texture details"
+    },
+    "3_how_to_use": {
+      "purpose": "Illustrate usage",
+      "prompt": "Close-up of hand wiping dirty sneaker with shoe wipe, showing product texture and cleaning motion. Bright studio lighting, shallow depth of field"
+    },
+    "4_enhanced_hero": {
+      "purpose": "Main product showcase",
+      "prompt": "Two shoe wipe packages arranged diagonally on dark surface with single sneaker at bottom right corner. Professional studio lighting, macro focus on product details"
+    }
+  },
+  "compliance_checklist": {
+    "amazon": [
+      "Title length ≤75 characters",
+      "Bullet points use benefit-first format",
+      "Backend keywords ≤250 bytes",
+      "MRP > selling price",
+      "HSN code included",
+      "GST rate specified"
+    ],
+    "flipkart": [
+      "Title length ≤80 characters",
+      "Description includes key features",
+      "HSN code included",
+      "GST rate specified"
+    ],
+    "meesho": [
+      "Title length ≤80 characters",
+      "Description includes key features",
+      "HSN code included",
+      "GST rate specified"
+    ]
+  }
+}

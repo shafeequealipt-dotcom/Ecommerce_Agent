@@ -1,0 +1,142 @@
+{
+  "product_analysis": {
+    "category": "Smartwatches",
+    "product_name": "Minimalist White Silicone Smartwatch",
+    "brand": "Generic",
+    "key_features": [
+      "Sleek circular black display",
+      "Soft-touch white silicone strap",
+      "Minimalist aesthetic design",
+      "Adjustable buckle strap",
+      "Lightweight ergonomic build"
+    ],
+    "target_audience": "Fitness enthusiasts, minimalist fashion lovers, teenagers, and working professionals",
+    "use_case": "Daily fitness tracking, casual wear, and lifestyle accessory"
+  },
+  "listing_fields": {
+    "product_title": "Minimalist White Silicone Smartwatch for Men & Women",
+    "item_highlights": "Sleek Design | Soft Silicone Strap | Lightweight | Unisex Style | Daily Wear",
+    "bullet_points": [
+      "MINIMALIST AESTHETIC: Features a clean, circular black display paired with a premium white strap for a modern, clutter-free look.",
+      "ULTRA-SOFT SILICONE: The high-quality silicone strap ensures maximum comfort for all-day wear, even during intense workouts.",
+      "ADJUSTABLE FIT: Designed with a secure buckle closure and multiple adjustment holes to provide a perfect fit for all wrist sizes.",
+      "LIGHTWEIGHT COMFORT: Engineered to be feather-light, making it ideal for sleeping, running, and continuous daily usage.",
+      "VERSATILE STYLE: The seamless white-on-black design complements both athletic gym wear and casual everyday outfits."
+    ],
+    "description": "Elevate your everyday style with our Minimalist White Silicone Smartwatch. Designed for those who appreciate simplicity and elegance, this smartwatch features a stunning circular black interface that contrasts beautifully with its pure white silicone strap. Whether you are hitting the gym, heading to the office, or out for a casual brunch, its lightweight and ergonomic design ensures you stay comfortable all day long. The durable silicone material is sweat-resistant and easy to clean, making it the perfect companion for an active lifestyle. A perfect blend of fashion and functionality for both men and women.",
+    "backend_search_terms": "smartwatch white silicone strap fitness tracker wearable digital watch minimalist watch unisex smart band gym accessory sports watch slim watch",
+    "mrp": "2499",
+    "selling_price": "999",
+    "hsn_code": "8517",
+    "gst_rate": "18%",
+    "brand": "Generic",
+    "category_path": "Electronics > Wearable Technology > Smartwatches",
+    "subcategory": "Smartwatches",
+    "color": "White",
+    "size_dimensions": "Standard Adult",
+    "material": "Silicone, Plastic",
+    "weight": "50g",
+    "package_dimensions": "15 x 10 x 5 cm",
+    "country_of_origin": "India",
+    "manufacturer_details": "Generic Electronics Pvt Ltd",
+    "packer_details": "Local Logistics Hub",
+    "importer_details": "N/A",
+    "manufacturing_date": "01/2024",
+    "expiry_date": "N/A",
+    "shelf_life": "N/A",
+    "net_quantity": "1",
+    "sku": "SMW-WHT-001",
+    "ean_upc": "8901234567890",
+    "pack_of": "1",
+    "stock_quantity": "100",
+    "fssai_license": "N/A",
+    "bis_certification": "Compliant",
+    "customer_care": "support@genericbrand.in",
+    "warranty": "6 Months Manufacturer Warranty",
+    "care_instructions": "Wipe with a soft dry cloth. Avoid extreme heat and harsh chemicals.",
+    "size_chart": "Wrist circumference: 14cm to 21cm",
+    "fit_type": "Adjustable",
+    "fabric": "N/A",
+    "pattern": "Solid",
+    "occasion": "Casual, Sports, Daily Wear",
+    "suitable_for": "Unisex",
+    "age_range": "13+ years",
+    "battery": "Rechargeable Lithium-ion",
+    "power": "USB Charging",
+    "connectivity": "Bluetooth",
+    "compatible_devices": "Android & iOS",
+    "key_features_infographic": [
+      "Soft Silicone Texture",
+      "Circular Display",
+      "Adjustable Buckle",
+      "Water Resistant"
+    ],
+    "search_keywords": "white smartwatch, silicone band watch, minimalist wearable, fitness watch white, budget smartwatch",
+    "shipping_weight": "0.1 kg",
+    "fulfillment_type": "Merchant",
+    "tax_code": "GST-18"
+  },
+  "platform_specific": {
+    "amazon": {
+      "title": "Minimalist White Silicone Smartwatch for Men & Women",
+      "item_highlights": "Sleek Design | Soft Silicone Strap | Lightweight | Unisex Style",
+      "bullets": [
+        "MINIMALIST AESTHETIC: Features a clean, circular black display paired with a premium white strap.",
+        "ULTRA-SOFT SILICONE: High-quality strap ensures maximum comfort for all-day wear.",
+        "ADJUSTABLE FIT: Secure buckle closure for a perfect fit on all wrist sizes.",
+        "LIGHTWEIGHT COMFORT: Feather-light design ideal for sleeping and running.",
+        "VERSATILE STYLE: Complements both athletic gym wear and casual outfits."
+      ],
+      "description": "Elevate your everyday style with our Minimalist White Silicone Smartwatch. Designed for simplicity and elegance, this smartwatch features a stunning circular black interface and a pure white silicone strap. Perfect for fitness and daily fashion.",
+      "backend_keywords": "smartwatch white silicone strap fitness tracker wearable digital watch minimalist watch unisex smart band"
+    },
+    "flipkart": {
+      "title": "Generic White Silicone Smartwatch",
+      "description": "A stylish and lightweight smartwatch with a white silicone strap and black circular display. Ideal for fitness and casual use.",
+      "search_keywords": "white smartwatch, silicone watch, fitness tracker"
+    },
+    "meesho": {
+      "title": "Stylish White Smartwatch for Men & Women",
+      "description": "Beautiful white silicone smartwatch with round black screen. Comfortable and lightweight for daily use.",
+      "attributes": {
+        "Color": "White",
+        "Material": "Silicone",
+        "Type": "Smartwatch",
+        "Gender": "Unisex"
+      }
+    }
+  },
+  "image_prompts": {
+    "1_lifestyle_usecase": {
+      "purpose": "Show the product in a real-world setting to build aspiration.",
+      "prompt": "Photorealistic close-up shot of a person's wrist wearing a minimalist white silicone smartwatch. The person is wearing a light beige linen shirt, holding a white ceramic coffee cup. Soft natural morning sunlight, lifestyle aesthetic, high-end photography, 1:1 aspect ratio."
+    },
+    "2_before_after": {
+      "purpose": "Highlight the aesthetic upgrade.",
+      "prompt": "Split screen image. Left side: A cluttered, heavy old-fashioned metal watch on a wrist. Right side: The sleek, clean, minimalist white silicone smartwatch on a clean wrist. High contrast, studio lighting, 1:1 aspect ratio."
+    },
+    "3_how_to_use": {
+      "purpose": "Demonstrate adjustability.",
+      "prompt": "A macro shot showing hands adjusting the buckle of the white silicone smartwatch strap. Focus on the texture of the silicone and the precision of the buckle. Clean, bright, professional studio lighting, 1:1 aspect ratio."
+    },
+    "4_enhanced_hero": {
+      "purpose": "Premium product display.",
+      "prompt": "High-end studio product photography of the white smartwatch floating slightly above a reflective white marble surface. Soft shadows, elegant lighting, extremely detailed textures of the silicone and the black glass display, 1:1 aspect ratio."
+    }
+  },
+  "compliance_checklist": {
+    "amazon": [
+      "Title length optimized",
+      "Benefit-driven bullets used",
+      "Backend keywords within byte limit"
+    ],
+    "flipkart": [
+      "Search keywords included",
+      "Clean title format"
+    ],
+    "meesho": [
+      "Simple descriptive title",
+      "Key attributes mapped"
+    ]
+  }
+}
