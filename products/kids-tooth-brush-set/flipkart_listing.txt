@@ -1,8 +1,8 @@
 === FLIPKART Listing ===
 
-title: Kids Tooth Brush Set of 4 - Soft Bristle, Multi-Color
+title: Kids Tooth Brush Set of 4, Multi-Color
 
-description: Our Kids Tooth Brush Set is designed to make dental care fun for children. Each toothbrush in the set features soft bristles and an ergonomic handle, perfect for small hands. The vibrant colors make brushing time enjoyable, and the durable plastic ensures long-lasting use. Ideal for parents looking to introduce their children to good oral hygiene practices.
+description: Introducing our Kids Tooth Brush Set of 4, designed to make brushing fun and easy for children. Each brush features a soft bristle head and an ergonomic handle that fits comfortably in small hands. The set includes a variety of colors to appeal to different preferences, encouraging kids to look forward to their daily oral care routine. The tooth brushes are made from durable, non-toxic plastic and are easy to clean, ensuring a hygienic brushing experience. Perfect for parents looking to instill good dental habits in their children.
 
-search_keywords: kids toothbrush set, soft bristle toothbrush, kids dental care, toddler toothbrush, ergonomic toothbrush for kids, toothbrush for children, multi-pack toothbrush
+search_keywords: kids tooth brush set, children's toothbrush, multi-color toothbrush, ergonomic toothbrush for kids
 

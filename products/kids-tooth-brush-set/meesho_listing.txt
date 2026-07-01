@@ -1,8 +1,8 @@
 === MEESHO Listing ===
 
-title: Kids Tooth Brush Set of 4 - Soft Bristle, Multi-Color
+title: Kids Tooth Brush Set of 4, Multi-Color
 
-description: Introducing our Kids Tooth Brush Set, designed to make brushing time fun and effective for children. Each toothbrush in the set features soft bristles and an ergonomic handle, perfect for small hands. The vibrant colors and durable plastic material ensure long-lasting use and safety.
+description: Introducing our Kids Tooth Brush Set of 4, designed to make brushing fun and easy for children. Each brush features a soft bristle head and an ergonomic handle that fits comfortably in small hands. The set includes a variety of colors to appeal to different preferences, encouraging kids to look forward to their daily oral care routine. The tooth brushes are made from durable, non-toxic plastic and are easy to clean, ensuring a hygienic brushing experience. Perfect for parents looking to instill good dental habits in their children.
 
-attributes: {'color': 'blue, pink', 'material': 'plastic', 'package': 'set of 4'}
+attributes: {}
 

@@ -3,6 +3,7 @@
 
 import json
 import os
+import re
 import sys
 import time
 import urllib.request
@@ -141,6 +142,22 @@ class NeedKartClient:
             print(f"    NeedKart: uploaded -> {url}", file=sys.stderr)
         return url
 
+    # ── Create category (if it doesn't exist) ───────────────────────────────
+
+    def create_category(self, name):
+        """Create a new product category on NeedKart. Returns created category dict or None."""
+        if not self.token:
+            return None
+        payload = {"name": name, "is_active": True}
+        result = _json_req(f"{BASE}/admin/product-categories", payload, token=self.token, timeout=30)
+        cat = result.get("product_category")
+        if cat:
+            print(f"    NeedKart: created category '{name}'", file=sys.stderr)
+            return cat
+        err = result.get("message", result.get("_error", "?"))
+        print(f"    NeedKart: create category '{name}' failed — {err}", file=sys.stderr)
+        return None
+
     # ── Create product ──────────────────────────────────────────────────────
 
     def create_product(self, listing, image_urls):
@@ -167,27 +184,37 @@ class NeedKartClient:
             "automotive": "Car Care",
             "automobile": "Car Care",
             "health": "Shoe Care",
-            "personal care": "Shoe Care",
-            "baby": "Shoe Care",
-            "oral care": "Shoe Care",
             "home": "Kitchen",
+            "kids": "Kids",
+            "children": "Kids",
+            "baby": "Kids",
+            "toy": "Kids",
+            "oral care": "Kids",
         }
         category_id = prereqs.get("categories", {}).get(category_name)
+        if not category_id:
+            cat_lower = category_name.lower()
+            for key, mapped in sorted(CATEGORY_MAP.items(), key=lambda x: -len(x[0])):
+                matches = (" " in key and key in cat_lower) or (bool(re.search(r'\b' + re.escape(key) + r'\b', cat_lower)))
+                if matches:
+                    category_id = prereqs.get("categories", {}).get(mapped)
+                    if category_id:
+                        print(f"    NeedKart: mapped '{category_name}' -> '{mapped}'", file=sys.stderr)
+                        break
         if not category_id:
             for name, cid in prereqs.get("categories", {}).items():
                 if category_name.lower() in name.lower():
                     category_id = cid
                     break
         if not category_id:
-            cat_lower = category_name.lower()
-            for key, mapped in CATEGORY_MAP.items():
-                if key in cat_lower:
-                    category_id = prereqs.get("categories", {}).get(mapped)
-                    if category_id:
-                        print(f"    NeedKart: mapped '{category_name}' -> '{mapped}'", file=sys.stderr)
-                        break
+            print(f"    NeedKart: creating new category '{category_name}'...", file=sys.stderr)
+            new_cat = self.create_category(category_name)
+            if new_cat:
+                category_id = new_cat["id"]
+                prereqs["categories"][category_name] = category_id
+                print(f"    NeedKart: created category '{category_name}' (id={category_id[:12]}...)", file=sys.stderr)
         if not category_id:
-            print(f"    NeedKart: no category match for '{category_name}'", file=sys.stderr)
+            print(f"    NeedKart: failed to create or match category for '{category_name}'", file=sys.stderr)
             return None
 
         sales_channel_id = None
@@ -232,7 +259,7 @@ class NeedKartClient:
             "handle": handle,
             "description": f"{description}\n\n{bullet_text}".strip(),
             "status": "published",
-            "category_ids": [category_id],
+            "categories": [{"id": category_id}],
             "weight": weight,
             "metadata": {"mrp": mrp},
             "options": [{"title": "Size", "values": ["Standard"]}],
@@ -283,7 +310,7 @@ class NeedKartClient:
         for v in variants:
             invs = v.get("inventory_items", [])
             if invs:
-                inv_item_id = invs[0].get("id")
+                inv_item_id = invs[0].get("inventory_item_id")
                 break
         if not inv_item_id:
             print(f"    NeedKart: no inventory item found for product", file=sys.stderr)
@@ -355,4 +382,6 @@ def slugify(text):
     for ch in " -/\\":
         s = s.replace(ch, "-")
     s = "".join(c for c in s if c.isalnum() or c == "-")
+    while "--" in s:
+        s = s.replace("--", "-")
     return s.strip("-")[:60]
