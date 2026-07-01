@@ -233,8 +233,8 @@ class NeedKartClient:
         title = fields.get("product_title", analysis.get("product_name", "Product"))
         handle = slugify(title)[:60]
         description = fields.get("description", "")
-        price_str = fields.get("selling_price", "499").replace(",", "").replace("₹", "")
-        mrp_str = fields.get("mrp", "999").replace(",", "").replace("₹", "")
+        price_str = str(fields.get("selling_price", "499")).replace(",", "").replace("₹", "")
+        mrp_str = str(fields.get("mrp", "999")).replace(",", "").replace("₹", "")
         try:
             price = int(float(price_str))
         except ValueError:
@@ -246,6 +246,8 @@ class NeedKartClient:
 
         sku = fields.get("sku", f"NK-{handle.upper()}")
         weight = fields.get("weight", "200")
+        if not isinstance(weight, str):
+            weight = str(weight)
         try:
             weight = int(weight.replace("g", "").replace("G", ""))
         except ValueError:
