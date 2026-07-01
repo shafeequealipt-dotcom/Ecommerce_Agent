@@ -26,9 +26,9 @@ DE_API_KEY = _load_env_key("DE_API_KEY")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")
 
 LISTING_MODELS = [
-    "google/gemma-4-31b-it:free",
-    "google/gemma-4-26b-a4b-it:free",
     "nvidia/nemotron-nano-12b-v2-vl:free",
+    "google/gemma-4-26b-a4b-it:free",
+    "google/gemma-4-31b-it:free",
 ]
 GEMINI_IMAGE_MODEL = "google/gemini-3.1-flash-image"
 POLLINATIONS_URL = "https://image.pollinations.ai/prompt"
@@ -368,7 +368,7 @@ RULES:
                 ]}
             ],
             "temperature": 0.7,
-            "max_tokens": 4096,
+            "max_tokens": 8192,
         }
 
         code = 0
@@ -377,7 +377,7 @@ RULES:
             if not result or result.get("_http_error"):
                 code = result.get("_http_error", 0) if result else 0
                 if code == 429:
-                    wait = 5 * (attempt + 1)
+                    wait = 2 * (attempt + 1)
                     print(f"    -> {model}: rate limited, retrying in {wait}s (attempt {attempt+1}/3)", file=sys.stderr)
                     time.sleep(wait)
                     continue

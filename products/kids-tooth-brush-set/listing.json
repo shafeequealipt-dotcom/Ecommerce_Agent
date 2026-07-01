@@ -1,0 +1,110 @@
+{
+  "product_analysis": {
+    "category": "Health & Personal Care",
+    "product_name": "Kids Tooth Brush Set",
+    "brand": "EcomListing Pro",
+    "key_features": [
+      "Ergonomic design",
+      "Soft bristles",
+      "Multi-color",
+      "Pack of 4",
+      "Child-friendly"
+    ],
+    "target_audience": "Parents of toddlers",
+    "use_case": "Daily oral care for children"
+  },
+  "listing_fields": {
+    "product_title": "Kids Tooth Brush Set (4 Pcs) - Soft Bristle, Multi-Color, Ergonomic",
+    "item_highlights": "Soft bristles, child-friendly design, vibrant colors",
+    "bullet_points": [
+      "SOFT BRISTLES: Gentle on gums and teeth",
+      "ERGONOMIC DESIGN: Easy for small hands",
+      "VIBRANT COLORS: Encourages brushing fun",
+      "MULTI-PACK CONVENIENCE: 4 brushes in one set",
+      "DURABLE MATERIAL: Non-toxic, long-lasting use"
+    ],
+    "description": "Our Kids Tooth Brush Set includes 4 toothbrushes in a vibrant mix of colors, each featuring soft bristles and an ergonomic design suited for children's small hands. Perfect for daily use, these toothbrushes are designed to make brushing a fun and enjoyable experience for kids.",
+    "backend_search_terms": "kids toothbrush, children dental care, soft bristle brush, ergonomic toothbrush, toothbrush for toddlers, multi-pack toothbrush",
+    "mrp": "300",
+    "selling_price": "200",
+    "hsn_code": "33040000",
+    "gst_rate": "12%",
+    "color": "blue and pink",
+    "size_dimensions": "15x4x2 cm",
+    "material": "Plastic",
+    "weight": "50g",
+    "package_dimensions": "20x10x5 cm",
+    "country_of_origin": "India",
+    "manufacturer_details": "EcomListing Pro Pvt. Ltd., Mumbai, India",
+    "packer_details": "EcomListing Pro Pvt. Ltd., Mumbai, India",
+    "importer_details": "EcomListing Pro Pvt. Ltd., Mumbai, India",
+    "pack_of": "4",
+    "stock_quantity": "1000",
+    "search_keywords": "kids toothbrush, children toothbrush, soft bristle toothbrush, ergonomic toothbrush for kids, toothbrush pack of 4",
+    "shipping_weight": "500g",
+    "fulfillment_type": "FBA",
+    "tax_code": "GST 12%"
+  },
+  "platform_specific": {
+    "amazon": {
+      "title": "Kids Tooth Brush Set of 4 - Soft Bristle, Ergonomic Design",
+      "item_highlights": "Soft Bristle, Ergonomic, Multi-Color",
+      "bullets": [
+        "SOFT BRISTLES: Gentle on young gums",
+        "ERGONOMIC HANDLE: Designed for children's grip",
+        "MULTI-COLOR DESIGN: Makes brushing fun",
+        "DURABLE & SAFE: Non-toxic materials",
+        "4-PACK VALUE: Great for families"
+      ],
+      "description": "Introducing our Kids Tooth Brush Set, specifically designed for children aged 2-8 years. The set includes 4 toothbrushes in a vibrant mix of colors, each featuring soft bristles and an ergonomic design suited for children's small hands. Our toothbrushes are made from non-toxic plastic, ensuring safety and durability. The ergonomic design helps children learn proper brushing techniques, while the bright colors make brushing time enjoyable. This pack is perfect for parents looking to instill good oral hygiene habits in their children.",
+      "backend_keywords": "children toothbrush, toddler toothbrush, soft bristle toothbrush, ergonomic toothbrush, kids dental care, toothbrush for kids, multi-pack toothbrush, child-friendly toothbrush, kids oral hygiene, non-toxic toothbrush"
+    },
+    "flipkart": {
+      "title": "Kids Tooth Brush Set of 4 - Soft Bristle, Multi-Color",
+      "description": "Our Kids Tooth Brush Set is designed to make dental care fun for children. Each toothbrush in the set features soft bristles and an ergonomic handle, perfect for small hands. The vibrant colors make brushing time enjoyable, and the durable plastic ensures long-lasting use. Ideal for parents looking to introduce their children to good oral hygiene practices.",
+      "search_keywords": "kids toothbrush set, soft bristle toothbrush, kids dental care, toddler toothbrush, ergonomic toothbrush for kids, toothbrush for children, multi-pack toothbrush"
+    },
+    "meesho": {
+      "title": "Kids Tooth Brush Set of 4 - Soft Bristle, Multi-Color",
+      "description": "Introducing our Kids Tooth Brush Set, designed to make brushing time fun and effective for children. Each toothbrush in the set features soft bristles and an ergonomic handle, perfect for small hands. The vibrant colors and durable plastic material ensure long-lasting use and safety.",
+      "attributes": {
+        "color": "blue, pink",
+        "material": "plastic",
+        "package": "set of 4"
+      }
+    }
+  },
+  "image_prompts": {
+    "1_lifestyle_usecase": {
+      "purpose": "Showcasing daily use",
+      "prompt": "A cheerful toddler brushing teeth with a colorful toothbrush in a bright bathroom setting, sunlight streaming through a window, toothpaste on the sink, playful composition."
+    },
+    "2_before_after": {
+      "purpose": "Highlighting dental benefits",
+      "prompt": "Split-screen image showing a child's mouth before (plaque) and after (clean) brushing with the toothbrush set, soft lighting, medical accuracy."
+    },
+    "3_how_to_use": {
+      "purpose": "Demonstrating technique",
+      "prompt": "Close-up of a child's hand holding an ergonomic toothbrush, brushing in circular motion, toothpaste foam, happy expression, home environment."
+    },
+    "4_enhanced_hero": {
+      "purpose": "Product showcase",
+      "prompt": "Diagonal arrangement of all 4 toothbrushes on a white background, soft shadows, studio lighting, focus on vibrant colors and design details."
+    }
+  },
+  "compliance_checklist": {
+    "amazon": [
+      "ISI mark",
+      "RoHS compliance",
+      "Child safety standards"
+    ],
+    "flipkart": [
+      "BIS certification",
+      "Product safety compliance"
+    ],
+    "meesho": [
+      "FSSAI license",
+      "GST compliance"
+    ]
+  }
+}

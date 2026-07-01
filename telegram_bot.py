@@ -105,11 +105,10 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             from needkart_client import NeedKartClient
             client = NeedKartClient()
-            if client.login():
-                await msg.edit_text("📤 Publishing to NeedKart...")
-                needkart_url, product_id = client.publish_listing(listing, images)
-                if needkart_url:
-                    await msg.edit_text(f"✅ Published!\n{needkart_url}")
+            await msg.edit_text("📤 Publishing to NeedKart...")
+            needkart_url, product_id = client.publish_listing(listing, images)
+            if needkart_url:
+                await msg.edit_text(f"✅ Published!\n{needkart_url}")
         except Exception as e:
             print(f"    NeedKart publish error: {e}", file=sys.stderr)
 

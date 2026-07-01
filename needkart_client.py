@@ -156,13 +156,36 @@ class NeedKartClient:
         fields = listing.get("listing_fields", {})
 
         category_name = analysis.get("category", "")
+
+        # Map AI-detected categories to NeedKart categories
+        CATEGORY_MAP = {
+            "shoe": "Shoe Care",
+            "footwear": "Shoe Care",
+            "shoe care": "Shoe Care",
+            "kitchen": "Kitchen",
+            "car": "Car Care",
+            "automotive": "Car Care",
+            "automobile": "Car Care",
+            "health": "Shoe Care",
+            "personal care": "Shoe Care",
+            "baby": "Shoe Care",
+            "oral care": "Shoe Care",
+            "home": "Kitchen",
+        }
         category_id = prereqs.get("categories", {}).get(category_name)
         if not category_id:
-            # Try partial match
             for name, cid in prereqs.get("categories", {}).items():
                 if category_name.lower() in name.lower():
                     category_id = cid
                     break
+        if not category_id:
+            cat_lower = category_name.lower()
+            for key, mapped in CATEGORY_MAP.items():
+                if key in cat_lower:
+                    category_id = prereqs.get("categories", {}).get(mapped)
+                    if category_id:
+                        print(f"    NeedKart: mapped '{category_name}' -> '{mapped}'", file=sys.stderr)
+                        break
         if not category_id:
             print(f"    NeedKart: no category match for '{category_name}'", file=sys.stderr)
             return None
@@ -309,6 +332,9 @@ class NeedKartClient:
             url = self.upload_image(data, filename)
             if url:
                 image_urls.append(url)
+
+        if not image_urls:
+            print(f"    NeedKart: no images uploaded — creating product without images", file=sys.stderr)
 
         product = self.create_product(listing, image_urls)
         if not product:
