@@ -8,9 +8,22 @@ import time
 import urllib.request
 import urllib.error
 
-BASE = os.environ.get("NEEDKART_API_BASE", "")
-ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL", "")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+BASE = (
+    os.environ.get("NEEDKART_API_BASE") or
+    os.environ.get("NeedKart_Api_Baseurl") or
+    ""
+)
+ADMIN_EMAIL = (
+    os.environ.get("ADMIN_EMAIL") or
+    os.environ.get("NeedKart_Api_Username") or
+    ""
+)
+ADMIN_PASSWORD = (
+    os.environ.get("ADMIN_PASSWORD") or
+    os.environ.get("NeedKart_Api_Password") or
+    os.environ.get("Needkart_API_Password") or
+    ""
+)
 
 CREDENTIALS_OK = bool(BASE and ADMIN_EMAIL and ADMIN_PASSWORD)
 

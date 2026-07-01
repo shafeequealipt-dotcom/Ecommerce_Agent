@@ -48,9 +48,12 @@ An AI-powered e-commerce product listing agent that generates complete, platform
 | `TELEGRAM_BOT_TOKEN` | ✅ Set (bot @EcomListingProBot) |
 | `NVIDIA_API_KEY` | ✅ Set (slow/timeout) |
 | `DE_API_KEY` | ✅ Set (rate-limited free tier) |
-| `NEEDKART_API_BASE` | ✅ Set (`https://api.staging.needkart.store`) |
-| `ADMIN_EMAIL` | ✅ Set |
-| `ADMIN_PASSWORD` | ⏳ Pending (staging password not confirmed) |
+| `NEEDKART_API_BASE` | ✅ Set |
+| `ADMIN_EMAIL` | ✅ Set (shafeequealipt@gmail.com) |
+| `ADMIN_PASSWORD` | ✅ Set (via NeedKart_Api_Password) |
+| `NeedKart_Api_Password` | ✅ Set (`Shaf@20203`) |
+| `NeedKart_Api_Username` | ✅ Set |
+| `NeedKart_Api_Baseurl` | ✅ Set |
 | `Gemini_API_KEY1` | ✅ Set (quota exhausted) |
 
 ## Bot Flow
@@ -64,12 +67,10 @@ Phase 2: Generate 4 images via Gemini/Pollinations/NVIDIA
   ↓
 Phase 3: Save to products/<slug>/ + send to Telegram
   ↓
-[NeedKart push: skipped until credentials confirmed]
+Phase 4: Publish to NeedKart (login → upload images → create product → set stock)
 ```
 
 ## Pending
 
-- [ ] Confirm staging admin password → enable NeedKart product auto-publish
-- [ ] Add credits to Gemini API key or OpenRouter for faster image gen
 - [ ] Reduce retry delays on rate-limited models
 - [ ] Switch default image model to Pollinations if Gemini credit runs out
