@@ -259,7 +259,8 @@ LISTING_SCHEMA = """{
     "brand": "",
     "key_features": [],
     "target_audience": "",
-    "use_case": ""
+    "use_case": "",
+    "appearance": ""
   },
   "brand_positioning": {
     "core_promise": "",
@@ -378,7 +379,8 @@ IMAGE_RULES = """IMAGE PROMPTS — art-direct like a premium brand campaign, 2-3
 - 2_before_after: one clean, believable transformation, same angle and light on both sides. Honest, not exaggerated.
 - 3_how_to_use: a single calm gesture showing the key step — hands and product, minimal backdrop.
 - 4_enhanced_hero: product alone, centred, pure white seamless background, filling ~85% of frame, soft shadow beneath.
-- The product must look exactly like the reference photo: same pack, colours, label. No extra text, logos, badges or props that are not real."""
+- The product must look exactly like the reference photo: same pack, colours, label. No extra text, logos, badges or props that are not real.
+- product_analysis.appearance = one precise sentence describing how the product in the photo physically looks, so an artist could redraw it: overall shape and proportions, lid/cap shape and finish, body colour and finish, and the exact printed label text with its position and orientation. Describe only what is visible — do not invent texture or details."""
 
 
 def _gemini_vision_json(system_prompt, user_prompt, img_b64, mime, max_tokens, temperature):
@@ -581,8 +583,10 @@ OTHER RULES:
 PREMIUM_STYLE = (
     "Premium brand campaign photography. One hero subject, generous negative space, "
     "restrained colour palette, soft controlled lighting with real shadows, crisp material detail. "
-    "The product must match the reference exactly — same pack, colours and label. "
-    "Uncluttered, no added text, logos or badges. Photorealistic, 1:1 square."
+    "The product must match the reference exactly — same shape, proportions, lid, colours and finish. "
+    "Keep the product's own printed label and logo exactly as in the reference, same wording and position. "
+    "Do not redesign, restyle or add texture or patterns to the product. "
+    "Uncluttered; add no other text, watermarks or badges anywhere. Photorealistic, 1:1 square."
 )
 
 IMAGE_FALLBACK_SCENES = {
@@ -593,13 +597,14 @@ IMAGE_FALLBACK_SCENES = {
 }
 
 
-def premium_image_prompt(image_key, user_prompt, product_name, max_len=None):
+def premium_image_prompt(image_key, user_prompt, product_name, max_len=None, appearance=""):
     """Scene written for this product by the listing model + the shared premium art direction."""
     scene = (user_prompt or "").strip() or IMAGE_FALLBACK_SCENES.get(image_key, "")
     if image_key == "4_enhanced_hero":
         # Marketplaces require a pure white main image — never let the scene override that
         scene = IMAGE_FALLBACK_SCENES[image_key]
-    prompt = f"Product: {product_name}. {scene} {PREMIUM_STYLE}"
+    look = f" Product appearance, to be reproduced exactly: {appearance.strip()}" if appearance and appearance.strip() else ""
+    prompt = f"Product: {product_name}.{look} {scene} {PREMIUM_STYLE}"
     return prompt[:max_len] if max_len else prompt
 
 
@@ -647,7 +652,7 @@ def generate_via_gemini(image_key, user_prompt, ref_image_path, product_name, ca
             "contents": [{"parts": [
                 {"inlineData": {"mimeType": ref_mime, "data": ref_b64}},
                 {"text": "Reference image above. Generate: "
-                         + premium_image_prompt(image_key, user_prompt, product_name) + "\nNo text in image."},
+                         + premium_image_prompt(image_key, user_prompt, product_name)},
             ]}],
             "generationConfig": {"responseModalities": ["IMAGE"]},
         }, timeout=300)
@@ -669,7 +674,7 @@ def generate_via_gemini(image_key, user_prompt, ref_image_path, product_name, ca
         "model": GEMINI_IMAGE_MODEL,
         "messages": [{"role": "user", "content": [
             {"type": "image_url", "image_url": {"url": f"data:{ref_mime};base64,{ref_b64}"}},
-            {"type": "text", "text": f"Reference image above. Generate: {prompt}\nNo text in image."}
+            {"type": "text", "text": f"Reference image above. Generate: {prompt}"}
         ]}],
         "max_tokens": 4096,
     }
@@ -807,6 +812,8 @@ def generate_all_images(listing, ref_image_path, image_model="deapi"):
     prompts = listing.get("image_prompts", {})
     analysis = listing.get("product_analysis", {})
     product_name = analysis.get("product_name", "")
+    if analysis.get("appearance"):
+        product_name = f"{product_name} ({analysis['appearance'].strip().rstrip('.')})"
     category = analysis.get("category", "")
 
     delay = 3 if image_model != "deapi" else 15

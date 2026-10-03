@@ -86,6 +86,7 @@ def write_image_prompts(listing, out_dir):
     from listing_agent import premium_image_prompt
     name = listing.get("product_analysis", {}).get("product_name", "product")
     prompts = listing.get("image_prompts", {})
+    appearance = listing.get("product_analysis", {}).get("appearance", "")
     lines = [
         f"# Image prompts — {name}",
         "",
@@ -96,7 +97,7 @@ def write_image_prompts(listing, out_dir):
     ]
     for n, (key, info) in enumerate(prompts.items(), 1):
         stem = IMAGE_NAMES.get(key, key)
-        prompt = premium_image_prompt(key, (info or {}).get("prompt", ""), name)
+        prompt = premium_image_prompt(key, (info or {}).get("prompt", ""), name, appearance=appearance)
         # A before/after is one picture with two halves; everything else is a single scene
         layout = ("One single image showing one side-by-side comparison — no other panels."
                   if key == "2_before_after" else
@@ -108,7 +109,7 @@ def write_image_prompts(listing, out_dir):
             "```",
             f"Generate exactly ONE standalone image for this prompt only. {layout} "
             f"Not a collage, grid, contact sheet or set of variations. "
-            f"Use the attached photo as the exact product reference. {prompt} No text in the image.",
+            f"Use the attached photo as the exact product reference. {prompt}",
             "```",
             "",
         ]
