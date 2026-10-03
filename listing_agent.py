@@ -24,6 +24,12 @@ def _load_env_key(env_var):
 NVIDIA_API_KEY = _load_env_key("NVIDIA_API_KEY")
 DE_API_KEY = _load_env_key("DE_API_KEY")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")
+GEMINI_API_KEY = _load_env_key("Gemini_API_Token") or _load_env_key("GEMINI_API_KEY")
+
+# Direct Gemini API (preferred when a key is set) — falls through to OpenRouter on any failure
+GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
+GEMINI_LISTING_MODELS = ["gemini-3.8-flash", "gemini-3.5-flash"]
+GEMINI_DIRECT_IMAGE_MODEL = "gemini-3.1-flash-image"
 
 # Free vision models first; the paid one is a last resort and needs OpenRouter credits
 LISTING_MODELS = [
@@ -83,6 +89,26 @@ def or_request(payload, timeout=180):
         except json.JSONDecodeError:
             msg = body[:300]
         return {"_http_error": e.code, "_error_msg": msg}
+
+
+def gemini_request(model, body, timeout=180):
+    """Call the Gemini API directly. Returns parsed JSON, or {"_http_error", "_error_msg"} on failure."""
+    req = urllib.request.Request(
+        f"{GEMINI_API_BASE}/{model}:generateContent",
+        data=json.dumps(body).encode(),
+        headers={"x-goog-api-key": GEMINI_API_KEY, "Content-Type": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        try:
+            msg = json.loads(e.read()).get("error", {}).get("message", "")
+        except Exception:
+            msg = ""
+        return {"_http_error": e.code, "_error_msg": msg.split("\n")[0][:200]}
+    except Exception as e:
+        return {"_http_error": 0, "_error_msg": str(e)[:200]}
 
 
 def nvidia_request(payload, model, timeout=180):
@@ -355,8 +381,43 @@ IMAGE_RULES = """IMAGE PROMPTS — art-direct like a premium brand campaign, 2-3
 - The product must look exactly like the reference photo: same pack, colours, label. No extra text, logos, badges or props that are not real."""
 
 
+def _gemini_vision_json(system_prompt, user_prompt, img_b64, mime, max_tokens, temperature):
+    """Listing via the direct Gemini API. Returns parsed JSON or None."""
+    body = {
+        "systemInstruction": {"parts": [{"text": system_prompt}]},
+        "contents": [{"parts": [{"inlineData": {"mimeType": mime, "data": img_b64}}, {"text": user_prompt}]}],
+        # Thinking tokens count against the output budget, so leave headroom above the listing size
+        "generationConfig": {"temperature": temperature, "maxOutputTokens": max_tokens + 4000,
+                             "responseMimeType": "application/json"},
+    }
+    for model in GEMINI_LISTING_MODELS:
+        for attempt in range(2):
+            result = gemini_request(model, body)
+            code = result.get("_http_error")
+            if code is None:
+                break
+            print(f"    -> {model}: HTTP {code} — {result.get('_error_msg', '')}", file=sys.stderr)
+            if code != 503 or attempt:
+                break
+            time.sleep(3)
+        if result.get("_http_error") is not None:
+            continue
+        try:
+            parts = result["candidates"][0]["content"]["parts"]
+            raw = "".join(p.get("text", "") for p in parts)
+            return json.loads(raw[raw.find("{"):raw.rfind("}") + 1])
+        except (KeyError, IndexError, ValueError):
+            print(f"    -> {model}: unusable response", file=sys.stderr)
+    return None
+
+
 def _vision_json(system_prompt, user_prompt, img_b64, mime, max_tokens=4500, temperature=0.7):
     """Send image + prompt through the listing model chain; return parsed JSON. Raises RuntimeError if all fail."""
+    if GEMINI_API_KEY:
+        result = _gemini_vision_json(system_prompt, user_prompt, img_b64, mime, max_tokens, temperature)
+        if result is not None:
+            return result
+        print(f"    -> Gemini direct unavailable, falling back to OpenRouter", file=sys.stderr)
     last_error = None
     for model in LISTING_MODELS:
         payload = {
@@ -577,9 +638,30 @@ def generate_via_nvidia(image_key, user_prompt, ref_image_path, product_name, ca
 
 
 def generate_via_gemini(image_key, user_prompt, ref_image_path, product_name, category):
-    """Fallback: generate via Gemini 3.1 Flash Image on OpenRouter."""
+    """Generate via Gemini Flash Image — direct API when the key has image quota, else OpenRouter."""
     ref_b64 = encode_image(ref_image_path)
     ref_mime = mime_for(ref_image_path)
+
+    if GEMINI_API_KEY:
+        direct = gemini_request(GEMINI_DIRECT_IMAGE_MODEL, {
+            "contents": [{"parts": [
+                {"inlineData": {"mimeType": ref_mime, "data": ref_b64}},
+                {"text": "Reference image above. Generate: "
+                         + premium_image_prompt(image_key, user_prompt, product_name) + "\nNo text in image."},
+            ]}],
+            "generationConfig": {"responseModalities": ["IMAGE"]},
+        }, timeout=300)
+        if direct.get("_http_error") is not None:
+            print(f"    -> Gemini direct image: HTTP {direct['_http_error']} — {direct.get('_error_msg', '')}", file=sys.stderr)
+        else:
+            try:
+                for part in direct["candidates"][0]["content"]["parts"]:
+                    inline = part.get("inlineData")
+                    if inline:
+                        return inline["mimeType"].split("/")[-1].replace("jpeg", "jpg"), base64.b64decode(inline["data"])
+            except (KeyError, IndexError):
+                pass
+            print(f"    -> Gemini direct image: no image in response", file=sys.stderr)
 
     prompt = premium_image_prompt(image_key, user_prompt, product_name)
 
