@@ -72,13 +72,39 @@ def build_product(listing, image_files):
 IMAGE_EXTS = (".png", ".jpg", ".jpeg", ".webp")
 
 
+def _images_dir(product_dir):
+    """The product's images folder, whatever its capitalisation (images/, Images/)."""
+    if os.path.isdir(product_dir):
+        for entry in os.listdir(product_dir):
+            if entry.lower() == "images" and os.path.isdir(os.path.join(product_dir, entry)):
+                return os.path.join(product_dir, entry)
+    return os.path.join(product_dir, "images")
+
+
 def list_images(product_dir):
-    """Image files in a product's images/ folder — hero first, then by name."""
-    img_dir = os.path.join(product_dir, "images")
+    """Image files in a product's images folder — hero (main image) first, then by name."""
+    img_dir = _images_dir(product_dir)
     if not os.path.isdir(img_dir):
         return []
     files = [f for f in os.listdir(img_dir) if f.lower().endswith(IMAGE_EXTS) and not f.startswith(".")]
-    return sorted(files, key=lambda f: ("hero" not in f.lower(), f.lower()))
+    hero = [f for f in files if "hero" in f.lower()]
+    if not hero and len(files) > 1:
+        # No file is named as the hero: the plain white-background shot compresses smallest
+        hero = [min(files, key=lambda f: os.path.getsize(os.path.join(img_dir, f)))]
+    return sorted(files, key=lambda f: (f not in hero, f.lower()))
+
+
+def collect_images(slug):
+    """Pull hand-made images dropped in the agent's own products/<slug>/images into the NeedKart folder."""
+    from listing_agent import PRODUCTS_DIR
+    src, dst = os.path.join(PRODUCTS_DIR, slug), os.path.join(PRODUCT_ROOT, slug)
+    if os.path.realpath(src) == os.path.realpath(dst) or not os.path.isdir(dst):
+        return
+    os.makedirs(_images_dir(dst), exist_ok=True)
+    for fname in list_images(src):
+        target = os.path.join(_images_dir(dst), fname)
+        if not os.path.exists(target):
+            shutil.copyfile(os.path.join(_images_dir(src), fname), target)
 
 
 def write_image_prompts(listing, out_dir):
@@ -123,7 +149,7 @@ def export_product(listing, images, ref_image_path=None):
     """Write the product folder. Returns its path."""
     name = listing.get("product_analysis", {}).get("product_name", "product")
     out_dir = os.path.join(PRODUCT_ROOT, slugify(name))
-    img_dir = os.path.join(out_dir, "images")
+    img_dir = _images_dir(out_dir)
     os.makedirs(img_dir, exist_ok=True)
 
     for key, (ext, data) in sorted(images.items()):

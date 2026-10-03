@@ -15,11 +15,12 @@ import os
 import sys
 import time
 
-from local_export import PRODUCT_ROOT, export_product, list_images
+from local_export import PRODUCT_ROOT, _images_dir, collect_images, export_product, list_images
 
 
 def state(slug):
     d = os.path.join(PRODUCT_ROOT, slug)
+    collect_images(slug)
     if not os.path.isfile(os.path.join(d, "listing.json")):
         return "no listing.json"
     if os.path.isfile(os.path.join(d, "published.json")):
@@ -50,7 +51,7 @@ def publish(slug, force=False):
     images = {}
     for i, fname in enumerate(files):
         stem, ext = os.path.splitext(fname)
-        with open(os.path.join(d, "images", fname), "rb") as f:
+        with open(os.path.join(_images_dir(d), fname), "rb") as f:
             images[f"{i}_{stem}"] = (ext.lstrip(".").lower(), f.read())
 
     from needkart_client import NeedKartClient

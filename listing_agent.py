@@ -839,7 +839,8 @@ def save_listing(listing, images):
     product_name = listing.get("product_analysis", {}).get("product_name", "product")
     slug = slugify(product_name)
     out_dir = os.path.join(PRODUCTS_DIR, slug)
-    os.makedirs(out_dir, exist_ok=True)
+    # images/ always exists, so hand-made images have an obvious place to go
+    os.makedirs(os.path.join(out_dir, "images"), exist_ok=True)
 
     print(f"  Phase 3: Saving to {out_dir}/", file=sys.stderr)
 
