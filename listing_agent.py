@@ -442,7 +442,8 @@ def _keyword_block(research_data):
         return "\n(No live search data available — choose keywords from your own marketplace knowledge.)\n"
     lines = ["\nREAL SHOPPER SEARCHES (live autocomplete, most popular first):"]
     lines.append("AMAZON.IN: " + "; ".join(research_data["amazon"][:25]))
-    lines.append("FLIPKART: " + "; ".join(research_data["flipkart"][:25]))
+    # Flipkart blocks some server IPs — fall back to the Amazon list rather than an empty one
+    lines.append("FLIPKART: " + ("; ".join(research_data["flipkart"][:25]) or "(unavailable — use the AMAZON.IN searches)"))
     lines.append("GOOGLE INDIA: " + "; ".join(research_data["google"][:10]))
     lines.append("TOP COMBINED: " + "; ".join(r["keyword"] for r in research_data["ranked"][:15]))
     return "\n".join(lines) + "\n"
