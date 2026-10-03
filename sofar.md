@@ -80,7 +80,7 @@ An AI-powered e-commerce product listing agent that generates complete, platform
 
 ## Deployments
 
-### Oracle Cloud VM (140.245.230.251) ✅
+### Oracle Cloud VM (68.233.109.57) ✅
 - Repo cloned to `/home/ubuntu/ecommerce-agent/`
 - Python venv with `python-telegram-bot`
 - Systemd service `ecom-bot.service` (auto-restart, enabled on boot)

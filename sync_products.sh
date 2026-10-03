@@ -6,9 +6,9 @@
 #        ./sync_products.sh --dry-run  (show what would be copied)
 set -euo pipefail
 
-VM_HOST="${ECOM_VM_HOST:-ubuntu@140.245.230.251}"
+VM_HOST="${ECOM_VM_HOST:-ubuntu@68.233.109.57}"
 VM_DIR="${ECOM_VM_PRODUCT_DIR:-/home/ubuntu/ecommerce-agent/needkart_product/}"
-SSH_KEY="${ECOM_VM_SSH_KEY:-/Users/naash/Documents/Projects/Personal-2/Orcale/ssh-key-2026-05-25 (1).key}"
+SSH_KEY="${ECOM_VM_SSH_KEY:-/Users/naash/Documents/Projects/Personal-2/Orcale/NEW KEYS/ssh-key-2026-07-22.key}"
 LOCAL_DIR="${NEEDKART_PRODUCT_DIR:-/Users/naash/Documents/Projects/NeedKart/product}"
 
 if [[ ! -f "$SSH_KEY" ]]; then
