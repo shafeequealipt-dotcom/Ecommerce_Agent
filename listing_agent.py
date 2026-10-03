@@ -53,7 +53,7 @@ if not OPENROUTER_API_KEY:
 def slugify(text):
     s = text.lower().strip()
     s = re.sub(r'[^a-z0-9]+', '-', s)
-    return s.strip('-')[:60]
+    return s.strip('-')[:60].strip('-')
 
 
 def encode_image(image_path):

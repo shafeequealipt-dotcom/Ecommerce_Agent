@@ -231,7 +231,7 @@ class NeedKartClient:
             break
 
         title = str(fields.get("product_title", analysis.get("product_name", "Product")) or "")
-        handle = slugify(title)[:60]
+        handle = slugify(title)  # already capped at 60 chars with no trailing dash
         description = str(fields.get("description", "") or "")
         price_str = str(fields.get("selling_price", "499")).replace(",", "").replace("₹", "")
         mrp_str = str(fields.get("mrp", "999")).replace(",", "").replace("₹", "")
@@ -384,4 +384,5 @@ class NeedKartClient:
 def slugify(text):
     s = str(text).lower().strip()
     s = re.sub(r'[^a-z0-9]+', '-', s)
-    return s.strip("-")[:60]
+    # Strip again after truncating — a cut that lands on a dash makes an invalid handle
+    return s.strip("-")[:60].strip("-")
