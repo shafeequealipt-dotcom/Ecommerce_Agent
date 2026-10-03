@@ -193,13 +193,14 @@ async def _manual_flow(update, msg, listing, photo_path):
     for block in blocks:
         title, _, rest = block.partition("\n")
         prompt = rest.split("```")[1].strip() if "```" in rest else rest.strip()
-        await update.message.reply_text(f"{title}\n\n{prompt}")
+        await update.message.reply_text(prompt)
+        await update.message.reply_text(f"⬆️ {title} — send it to ChatGPT on its own, with the product photo attached.")
 
     slug = os.path.basename(nk_dir)
     await msg.edit_text(
         f"✅ Listing ready: {name}\n\n"
         f"Folder: product/{slug}/\n"
-        f"1. Attach the product photo and run each prompt above\n"
+        f"1. Run each prompt above as a separate message (one image each), with the product photo attached\n"
         f"2. Save the images into product/{slug}/images/ on the Mac\n"
         f"3. Publish from the Mac: publish_local.py {slug}\n\n"
         f"Not published yet — waiting for images."

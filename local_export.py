@@ -85,21 +85,29 @@ def write_image_prompts(listing, out_dir):
     """Prompts for generating the images by hand (e.g. in ChatGPT), one block per image."""
     from listing_agent import premium_image_prompt
     name = listing.get("product_analysis", {}).get("product_name", "product")
+    prompts = listing.get("image_prompts", {})
     lines = [
         f"# Image prompts — {name}",
         "",
-        "For each image: attach the product photo (`reference.*` in this folder), paste the prompt,",
-        "then save the result into `images/` with the file name shown.",
+        f"{len(prompts)} separate images. Send ONE prompt per message — never paste them together,",
+        "or you get a single collage. For each: attach the product photo (`reference.*` in this folder),",
+        "paste the prompt, then save the result into `images/` with the file name shown.",
         "",
     ]
-    for key, info in listing.get("image_prompts", {}).items():
+    for n, (key, info) in enumerate(prompts.items(), 1):
         stem = IMAGE_NAMES.get(key, key)
         prompt = premium_image_prompt(key, (info or {}).get("prompt", ""), name)
+        # A before/after is one picture with two halves; everything else is a single scene
+        layout = ("One single image showing one side-by-side comparison — no other panels."
+                  if key == "2_before_after" else
+                  "One single scene filling the whole frame.")
         lines += [
-            f"## {stem}",
+            f"## Image {n} of {len(prompts)} — {stem}",
             f"Save as: `images/{stem}.png`",
             "",
             "```",
+            f"Generate exactly ONE standalone image for this prompt only. {layout} "
+            f"Not a collage, grid, contact sheet or set of variations. "
             f"Use the attached photo as the exact product reference. {prompt} No text in the image.",
             "```",
             "",
