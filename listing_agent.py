@@ -27,8 +27,9 @@ OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPE
 
 LISTING_MODELS = [
     "nvidia/nemotron-nano-12b-v2-vl:free",
-    "google/gemma-4-26b-a4b-it:free",
-    "google/gemma-4-31b-it:free",
+    "google/gemini-2.5-flash-lite-preview-09-2025",
+    "qwen/qwen3-vl-8b-instruct",
+    "meta-llama/llama-3.2-11b-vision-instruct",
 ]
 GEMINI_IMAGE_MODEL = "google/gemini-3.1-flash-image"
 POLLINATIONS_URL = "https://image.pollinations.ai/prompt"
@@ -147,30 +148,7 @@ def _deapi_poll(rid, timeout=120):
 
 def generate_via_deapi(image_key, user_prompt, ref_image_path, product_name, category):
     """Generate via deAPI.ai FLUX.2-klein-4b img2img — passes reference product photo for consistency."""
-    prompt_map = {
-        "1_lifestyle_usecase": (
-            f"Product shot: {product_name}. Natural lifestyle use, person using product "
-            f"in real-world setting, bright daylight, warm atmosphere, "
-            f"professional e-commerce photography, sharp focus. 1:1 square."
-        ),
-        "2_before_after": (
-            f"Product: {product_name}. Split-screen before-and-after comparison. "
-            f"Left side: dirty untreated dull state. Right side: clean fresh vibrant state. "
-            f"The product is visible. Studio lighting, photorealistic. 1:1 square."
-        ),
-        "3_how_to_use": (
-            f"Product: {product_name}. Instructional shot showing how to use the product. "
-            f"Clean minimal composition on light background, "
-            f"bright lighting, professional e-commerce. 1:1 square."
-        ),
-        "4_enhanced_hero": (
-            f"Product: {product_name}. Premium e-commerce hero shot. "
-            f"Product centered on pure white background filling 85% of frame. "
-            f"Soft studio lighting with subtle shadow for depth. "
-            f"High-end commercial photography, true-to-life colors, every detail visible. 1:1 square."
-        ),
-    }
-    prompt = prompt_map.get(image_key, user_prompt)
+    prompt = premium_image_prompt(image_key, user_prompt, product_name)
 
     with open(ref_image_path, "rb") as f:
         img_data = f.read()
@@ -244,22 +222,9 @@ def generate_via_deapi(image_key, user_prompt, ref_image_path, product_name, cat
 
 # ── Phase 1: Analyze image & generate listing JSON ──────────────────────────
 
-def analyze_image(image_path, product_hint=None):
-    print(f"  Phase 1: Analyzing product image...", file=sys.stderr)
-    if product_hint:
-        print(f"    Product hint: {product_hint}", file=sys.stderr)
-    img_b64 = encode_image(image_path)
-    mime = mime_for(image_path)
+SEO_PERSONA = """You are EcomListing Pro: a senior marketplace SEO engineer and brand copywriter for Indian marketplaces (Amazon.in, Flipkart, Meesho). You work the way a Helium 10 / Keepa power user does — keyword-first, indexing-aware, conversion-led — and you write with the restraint of a premium brand. Output ONLY valid JSON — no markdown, no extra text."""
 
-    system_prompt = """You are EcomListing Pro, an expert e-commerce product listing agent for Indian marketplaces (Amazon.in, Flipkart, Meesho). You generate complete, platform-compliant product listings from a single product image. Output ONLY valid JSON — no markdown, no extra text."""
-
-    hint_block = "\nPRODUCT HINT (use this to guide your analysis): " + product_hint + "\n" if product_hint else ""
-
-    user_prompt = "Analyze this product image and generate a complete e-commerce listing.\n" + hint_block + """
-
-Output ONLY valid JSON with this exact structure:
-
-{
+LISTING_SCHEMA = """{
   "product_analysis": {
     "category": "",
     "product_name": "",
@@ -267,6 +232,19 @@ Output ONLY valid JSON with this exact structure:
     "key_features": [],
     "target_audience": "",
     "use_case": ""
+  },
+  "brand_positioning": {
+    "core_promise": "",
+    "tagline": "",
+    "price_justification": [],
+    "tone": ""
+  },
+  "seo": {
+    "primary_keyword": "",
+    "secondary_keywords": [],
+    "long_tail_keywords": [],
+    "amazon_keywords_used": [],
+    "flipkart_keywords_used": []
   },
   "listing_fields": {
     "product_title": "",
@@ -346,16 +324,37 @@ Output ONLY valid JSON with this exact structure:
     "4_enhanced_hero": {"purpose": "", "prompt": ""}
   },
   "compliance_checklist": {"amazon": [], "flipkart": [], "meesho": []}
-}
+}"""
 
-RULES:
-- Product title ≤75 chars (Amazon 2026 rule)
-- Amazon bullets: 5 benefit-first with CAPS header
-- Backend keywords: ≤250 bytes
-- MRP > selling price
-- For unknown fields, provide sensible defaults for Indian market (INR, India)
-- Image prompts: describe the SCENE not just product. Include setting, lighting, what the product looks like, action, composition. Be specific. Photorealistic, 1:1 square. 2-3 detailed sentences."""
+VALUE_RULES = """PERCEIVED VALUE — write like a premium brand (think how Apple presents a phone), so the price feels earned:
+- Lead with the outcome and the feeling of owning it, then prove it with a concrete detail (material, quantity, measurement, how it is made). Never lead with a spec list.
+- One idea per sentence. Short, confident, calm. No hype words: no "best", "amazing", "No.1", "ultimate", "!!", no ALL-CAPS sentences in descriptions.
+- Specifics beat superlatives: "80 wipes — about three months of daily use" beats "long lasting".
+- Justify the price: cost-per-use, what it replaces, time saved, what it protects (e.g. the shoes it keeps new). Fill brand_positioning.price_justification with 3 such reasons and weave them into the description.
+- brand_positioning.core_promise = the single benefit everything else supports. tagline = ≤6 words.
+- Honesty is non-negotiable: do NOT invent certifications, awards, clinical claims, test results, ratings, or "dermatologist/lab tested" unless visible on the pack. Only state what the image or hint supports."""
 
+SEO_RULES = """SEO — every title and keyword field must be built from the REAL SHOPPER SEARCHES given above:
+- seo.primary_keyword = the highest-demand search that truly describes this product. It goes in the first 40 characters of every title.
+- Titles: Brand + primary keyword + key differentiator + size/pack. Readable, no keyword stuffing, no repeated words.
+- Amazon: title ≤75 chars. 5 bullets, each starts with a 2-4 word CAPS benefit header, then one natural sentence containing a secondary or long-tail search phrase. backend_keywords ≤250 bytes, space-separated, lowercase, NO commas, NO words already in the title or bullets, NO brand names, NO competitor names — use it for synonyms, long-tail and Hinglish/regional spellings.
+- Flipkart: title built from the FLIPKART searches (Flipkart shoppers search differently). search_keywords = comma-separated phrases taken from the Flipkart list.
+- Use phrases from the lists word-for-word where they fit; marketplaces index exact words.
+- Skip any search that names another brand, another retailer, a city, or a different product type.
+- List the searches you actually used in seo.amazon_keywords_used and seo.flipkart_keywords_used."""
+
+IMAGE_RULES = """IMAGE PROMPTS — art-direct like a premium brand campaign, 2-3 specific sentences each, photorealistic, 1:1 square:
+- One hero subject, generous negative space, a restrained 2-3 colour palette drawn from the product, nothing cluttered.
+- Controlled studio or soft window light, gentle falloff, real shadows and reflections, visible material texture.
+- 1_lifestyle_usecase: an aspirational, tidy real-life moment — the product in use by its ideal owner, shallow depth of field.
+- 2_before_after: one clean, believable transformation, same angle and light on both sides. Honest, not exaggerated.
+- 3_how_to_use: a single calm gesture showing the key step — hands and product, minimal backdrop.
+- 4_enhanced_hero: product alone, centred, pure white seamless background, filling ~85% of frame, soft shadow beneath.
+- The product must look exactly like the reference photo: same pack, colours, label. No extra text, logos, badges or props that are not real."""
+
+
+def _vision_json(system_prompt, user_prompt, img_b64, mime, max_tokens=8192, temperature=0.7):
+    """Send image + prompt through the listing model chain; return parsed JSON. Raises RuntimeError if all fail."""
     last_error = None
     for model in LISTING_MODELS:
         payload = {
@@ -367,8 +366,8 @@ RULES:
                     {"type": "text", "text": user_prompt}
                 ]}
             ],
-            "temperature": 0.7,
-            "max_tokens": 8192,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
         }
 
         code = 0
@@ -419,47 +418,130 @@ RULES:
         time.sleep(2)
 
     print(f"  ERROR: All models failed. Last error: {last_error}", file=sys.stderr)
-    sys.exit(1)
+    raise RuntimeError(f"All listing models failed: {last_error}")
+
+
+def find_seed_keywords(img_b64, mime, product_hint=None):
+    """Quick first look: what would a shopper type to find this product?"""
+    hint_block = f"\nPRODUCT HINT: {product_hint}\n" if product_hint else ""
+    prompt = ("Look at this product." + hint_block + """
+Return ONLY JSON: {"product_name": "", "seed_keywords": ["", "", "", ""]}
+seed_keywords = the 4 most common generic 2-3 word phrases an Indian shopper would type into Amazon or Flipkart search to find this kind of product. Generic product terms only — no brand names, no sizes, no colours.""")
+    try:
+        result = _vision_json(SEO_PERSONA, prompt, img_b64, mime, max_tokens=300, temperature=0.2)
+        seeds = [s for s in result.get("seed_keywords", []) if isinstance(s, str) and s.strip()]
+    except RuntimeError:
+        seeds = []
+    if not seeds and product_hint:
+        seeds = [product_hint]
+    return seeds
+
+
+def _keyword_block(research_data):
+    if not research_data or not research_data.get("ranked"):
+        return "\n(No live search data available — choose keywords from your own marketplace knowledge.)\n"
+    lines = ["\nREAL SHOPPER SEARCHES (live autocomplete, most popular first):"]
+    lines.append("AMAZON.IN: " + "; ".join(research_data["amazon"][:25]))
+    lines.append("FLIPKART: " + "; ".join(research_data["flipkart"][:25]))
+    lines.append("GOOGLE INDIA: " + "; ".join(research_data["google"][:10]))
+    lines.append("TOP COMBINED: " + "; ".join(r["keyword"] for r in research_data["ranked"][:15]))
+    return "\n".join(lines) + "\n"
+
+
+def _trim_bytes(text, limit=250):
+    """Amazon ignores the whole backend field if it exceeds 250 bytes — cut at a word boundary."""
+    words, out = str(text or "").replace(",", " ").split(), []
+    for w in words:
+        if len(" ".join(out + [w]).encode("utf-8")) > limit:
+            break
+        if w not in out:
+            out.append(w)
+    return " ".join(out)
+
+
+def analyze_image(image_path, product_hint=None):
+    print(f"  Phase 1: Analyzing product image...", file=sys.stderr)
+    if product_hint:
+        print(f"    Product hint: {product_hint}", file=sys.stderr)
+    img_b64 = encode_image(image_path)
+    mime = mime_for(image_path)
+
+    # 1a. What do shoppers actually search for?
+    import keyword_research
+    research_data = None
+    seeds = find_seed_keywords(img_b64, mime, product_hint)
+    if seeds:
+        print(f"    Keyword research: {', '.join(seeds)}", file=sys.stderr)
+        try:
+            research_data = keyword_research.research(seeds)
+            print(f"    -> {len(research_data['amazon'])} Amazon, {len(research_data['flipkart'])} Flipkart, "
+                  f"{len(research_data['google'])} Google searches found", file=sys.stderr)
+        except Exception as e:
+            print(f"    -> keyword research failed: {e}", file=sys.stderr)
+    else:
+        print(f"    Keyword research skipped (no seed keywords)", file=sys.stderr)
+
+    # 1b. Write the listing around those searches
+    hint_block = "\nPRODUCT HINT (use this to guide your analysis): " + product_hint + "\n" if product_hint else ""
+    user_prompt = (
+        "Analyze this product image and generate a complete e-commerce listing.\n" + hint_block
+        + _keyword_block(research_data)
+        + "\nOutput ONLY valid JSON with this exact structure:\n\n" + LISTING_SCHEMA + "\n\n"
+        + VALUE_RULES + "\n\n" + SEO_RULES + "\n\n" + IMAGE_RULES + """
+
+OTHER RULES:
+- MRP > selling price
+- For unknown fields, provide sensible defaults for Indian market (INR, India)"""
+    )
+    listing = _vision_json(SEO_PERSONA, user_prompt, img_b64, mime)
+
+    # 1c. Enforce hard limits and record what was researched vs. used
+    fields = listing.setdefault("listing_fields", {})
+    amazon = listing.setdefault("platform_specific", {}).setdefault("amazon", {})
+    fields["backend_search_terms"] = _trim_bytes(fields.get("backend_search_terms"))
+    amazon["backend_keywords"] = _trim_bytes(amazon.get("backend_keywords"))
+    if research_data:
+        listing["keyword_research"] = research_data
+        listing["keyword_coverage"] = keyword_research.coverage(research_data, listing)
+        for plat, rep in listing["keyword_coverage"].items():
+            print(f"    {plat}: {rep['coverage_pct']}% of top searches covered", file=sys.stderr)
+    return listing
 
 
 # ── Phase 2: Generate images ────────────────────────────────────────────────
 # Priority: NVIDIA FLUX (free) → Gemini OpenRouter (paid) → Pollinations (free/low-quality)
 
+PREMIUM_STYLE = (
+    "Premium brand campaign photography. One hero subject, generous negative space, "
+    "restrained colour palette, soft controlled lighting with real shadows, crisp material detail. "
+    "The product must match the reference exactly — same pack, colours and label. "
+    "Uncluttered, no added text, logos or badges. Photorealistic, 1:1 square."
+)
+
+IMAGE_FALLBACK_SCENES = {
+    "1_lifestyle_usecase": "The product in use in a tidy, aspirational real-life setting, shallow depth of field.",
+    "2_before_after": "Split-screen before and after, same angle and light. Left: the problem. Right: the clean result. Believable, not exaggerated.",
+    "3_how_to_use": "A single calm gesture showing how the product is used — hands and product on a minimal light backdrop.",
+    "4_enhanced_hero": "Product alone, centred on a pure white seamless background, filling 85% of the frame, soft shadow beneath.",
+}
+
+
+def premium_image_prompt(image_key, user_prompt, product_name, max_len=None):
+    """Scene written for this product by the listing model + the shared premium art direction."""
+    scene = (user_prompt or "").strip() or IMAGE_FALLBACK_SCENES.get(image_key, "")
+    if image_key == "4_enhanced_hero":
+        # Marketplaces require a pure white main image — never let the scene override that
+        scene = IMAGE_FALLBACK_SCENES[image_key]
+    prompt = f"Product: {product_name}. {scene} {PREMIUM_STYLE}"
+    return prompt[:max_len] if max_len else prompt
+
+
 POLLINATION_MODELS = ["seedream5", "zimage", "flux"]
 
 
 def build_nvidia_prompt(image_key, user_prompt, product_name, category):
-    """Concise, high-quality prompt optimized for FLUX models on NVIDIA."""
-    templates = {
-        "1_lifestyle_usecase": (
-            f"Product shot: {product_name}. Lifestyle photo showing the product in use "
-            f"in a real-world setting. Clean modern environment, natural daylight. "
-            f"The product is the focal point, clearly visible and being used naturally. "
-            f"Warm inviting atmosphere. Professional e-commerce photography, photorealistic, "
-            f"sharp focus, accurate colors. 1:1 square."
-        ),
-        "2_before_after": (
-            f"Product: {product_name}. Before-and-after comparison, split-screen. "
-            f"Left: dirty/untreated state with dull colors. "
-            f"Right: clean/treated state with vibrant fresh look. "
-            f"The product is visible. Clean vertical division. "
-            f"Studio lighting, photorealistic. 1:1 square."
-        ),
-        "3_how_to_use": (
-            f"Product: {product_name}. Clean instructional shot showing how to use the product. "
-            f"Simple minimal composition on light background. "
-            f"Bright even lighting, sharp focus, professional. "
-            f"Photorealistic product photography. 1:1 square."
-        ),
-        "4_enhanced_hero": (
-            f"Product: {product_name}. Premium e-commerce hero shot. "
-            f"Product centered on pure white background, filling 85% of frame. "
-            f"Soft studio lighting with subtle shadow beneath for depth. "
-            f"High-end commercial photography style, true-to-life colors, "
-            f"sharp focus, every detail visible. 1:1 square."
-        ),
-    }
-    return templates.get(image_key, user_prompt)
+    """Prompt for FLUX models on NVIDIA."""
+    return premium_image_prompt(image_key, user_prompt, product_name)
 
 
 def generate_via_nvidia(image_key, user_prompt, ref_image_path, product_name, category):
@@ -493,13 +575,7 @@ def generate_via_gemini(image_key, user_prompt, ref_image_path, product_name, ca
     ref_b64 = encode_image(ref_image_path)
     ref_mime = mime_for(ref_image_path)
 
-    prompt_map = {
-        "1_lifestyle_usecase": f"Product: {product_name}. Lifestyle shot in use, natural setting. Photorealistic. 1:1 square.",
-        "2_before_after": f"Product: {product_name}. Split-screen before-and-after. LEFT: problem. RIGHT: after. 1:1 square.",
-        "3_how_to_use": f"Product: {product_name}. Instructional shot. Clean background. 1:1 square.",
-        "4_enhanced_hero": f"Product: {product_name}. Hero shot on pure white bg. Centered, 85% frame. Studio lighting. 1:1 square.",
-    }
-    prompt = prompt_map.get(image_key, user_prompt)
+    prompt = premium_image_prompt(image_key, user_prompt, product_name)
 
     payload = {
         "model": GEMINI_IMAGE_MODEL,
@@ -566,13 +642,8 @@ def generate_via_gemini(image_key, user_prompt, ref_image_path, product_name, ca
 
 def generate_via_pollinations(image_key, user_prompt, product_name, category):
     """Last resort: Pollinations.ai free API."""
-    prompts = {
-        "1_lifestyle_usecase": f"{product_name}. Lifestyle shot. Natural use. Photorealistic. 1:1 square.",
-        "2_before_after": f"{product_name}. Before-after split. LEFT dirty RIGHT clean. 1:1 square.",
-        "3_how_to_use": f"{product_name}. Instructional use. White bg. 1:1 square.",
-        "4_enhanced_hero": f"{product_name}. Hero shot. White bg. Centered. Studio lighting. 1:1 square.",
-    }
-    structured = prompts.get(image_key, user_prompt)
+    # Prompt travels in the URL — keep it short
+    structured = premium_image_prompt(image_key, user_prompt, product_name, max_len=600)
 
     for model in POLLINATION_MODELS:
         size = 2048 if model == "seedream5" else 1024
@@ -713,12 +784,11 @@ def save_listing(listing, images):
 
 def main():
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} [--image-model <deapi|nvidia|gemini|pollinations>] [--hint <product-hint>] [--push] <product-image-path>", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} [--image-model <deapi|nvidia|gemini|pollinations>] [--hint <product-hint>] <product-image-path>", file=sys.stderr)
         sys.exit(1)
 
     image_model = "deapi"
     product_hint = None
-    push_to_needkart = False
     image_path = sys.argv[-1]
     args = sys.argv[1:-1]
     for i, a in enumerate(args):
@@ -726,8 +796,6 @@ def main():
             image_model = args[i + 1]
         if a == "--hint" and i + 1 < len(args):
             product_hint = args[i + 1]
-        if a == "--push":
-            push_to_needkart = True
 
     if image_model not in ("deapi", "nvidia", "gemini", "pollinations"):
         print(f"ERROR: invalid --image-model '{image_model}'. Use deapi, nvidia, gemini, or pollinations.", file=sys.stderr)
@@ -741,15 +809,18 @@ def main():
     images = generate_all_images(listing, image_path, image_model)
     out_dir = save_listing(listing, images)
 
-    if push_to_needkart:
-        print(f"\n  Phase 4: Publishing to NeedKart...", file=sys.stderr)
-        from needkart_client import NeedKartClient
-        client = NeedKartClient()
-        product_url, product_id = client.publish_listing(listing, images)
-        if product_url:
-            print(f"  NeedKart: {product_url}", file=sys.stderr)
-        else:
-            print(f"  NeedKart: publish skipped/failed", file=sys.stderr)
+    from local_export import export_product
+    print(f"\n  Phase 4: Exporting to NeedKart product folder...", file=sys.stderr)
+    nk_dir = export_product(listing, images)
+    print(f"  NeedKart: {nk_dir}", file=sys.stderr)
+
+    print(f"\n  Phase 5: Publishing to NeedKart store...", file=sys.stderr)
+    from needkart_client import NeedKartClient
+    product_url, product_id = NeedKartClient().publish_listing(listing, images)
+    if product_url:
+        print(f"  NeedKart: {product_url}", file=sys.stderr)
+    else:
+        print(f"  NeedKart: publish skipped/failed", file=sys.stderr)
 
     src_map = {"deapi": "deAPI.ai FLUX.2-klein/img2img", "nvidia": "NVIDIA FLUX.1-schnell", "gemini": "Gemini/OpenRouter", "pollinations": "Pollinations.ai"}
     print(f"\nImages: {len(images)}/4 | Source: {src_map[image_model]}", file=sys.stderr)

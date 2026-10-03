@@ -2,6 +2,7 @@
 """Telegram bot for EcomListing Pro — receive product photo, get back a complete listing."""
 
 import asyncio
+import glob
 import io
 import json
 import os
@@ -13,6 +14,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PRODUCTS_DIR = os.path.join(SCRIPT_DIR, "products")
 sys.path.insert(0, SCRIPT_DIR)
 
 import listing_agent
@@ -36,7 +38,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Commands:\n"
         "/start — this message\n"
         "/help — usage guide\n"
-        "/model — set image model (gemini / pollinations / nvidia / deapi)",
+        "/model — set image model (gemini / pollinations / nvidia / deapi)\n"
+        "/republish <slug> — re-export a saved product to the NeedKart folder and republish it without re-generating images\n"
+        "/flipkart — check Flipkart API / auth status",
         parse_mode="Markdown",
     )
 
@@ -70,6 +74,108 @@ async def set_model(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"Image model set to: {model}")
 
 
+async def flipkart_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Check Flipkart API auth and configuration status."""
+    from flipkart_client import FlipkartClient, FLIPKART_SANDBOX
+    msg = await update.message.reply_text("🔍 Checking Flipkart status...")
+    try:
+        fc = FlipkartClient()
+        status = fc.status()
+        lines = [
+            f"🌐 *Environment:* {status['environment']}",
+            f"🔑 *App ID set:* {'✅' if status['app_id_set'] else '❌'}",
+            f"🔑 *App Secret set:* {'✅' if status['app_secret_set'] else '❌'}",
+            f"📍 *Location ID:* `{status['location_id']}`",
+            f"🔓 *Authenticated:* {'✅' if status['authenticated'] else '❌'}",
+        ]
+        if status["auth_error"]:
+            lines.append(f"  └─ {status['auth_error']}")
+        if status["locations"]:
+            locs = status["locations"]
+            if isinstance(locs, list):
+                lines.append(f"  └─ Found {len(locs)} location(s)")
+                for loc in locs[:3]:
+                    lines.append(f"     • ID: `{loc.get('id','?')}` — {loc.get('status','?')}")
+            elif isinstance(locs, dict):
+                lines.append(f"  └─ API response: `{str(locs)[:200]}`")
+            else:
+                lines.append(f"  └─ `{str(locs)[:200]}`")
+        if not status["authenticated"]:
+            lines.append("")
+            lines.append("⚡ *To fix:*")
+            lines.append("1. Go to [Flipkart Seller Dashboard](https://seller.flipkart.com)")
+            lines.append("2. *Manage Profile → Developer Access*")
+            lines.append("3. Check if the app shows *Approved* or *Pending*")
+            lines.append("4. If Pending, contact Flipkart support via Seller Help")
+            lines.append("5. Or raise a ticket for *sandbox* access at seller portal")
+        await msg.edit_text("\n".join(lines), parse_mode="Markdown", disable_web_page_preview=True)
+    except Exception as e:
+        await msg.edit_text(f"❌ Flipkart check error: {e}", parse_mode="Markdown")
+
+
+async def republish(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    args = context.args
+    if not args:
+        existing = [d for d in os.listdir(PRODUCTS_DIR) if os.path.isdir(os.path.join(PRODUCTS_DIR, d)) and d != ".DS_Store"]
+        if existing:
+            msg = "Usage: /republish <slug>\n\nAvailable products:\n" + "\n".join(f"  /republish {d}" for d in sorted(existing))
+        else:
+            msg = "Usage: /republish <slug>\n\nNo saved products found."
+        await update.message.reply_text(msg)
+        return
+    slug = args[0].strip("/")
+    product_dir = os.path.join(PRODUCTS_DIR, slug)
+    listing_path = os.path.join(product_dir, "listing.json")
+    if not os.path.exists(listing_path):
+        await update.message.reply_text(f"❌ No saved listing found for `{slug}`.\nAvailable: {', '.join(d for d in os.listdir(PRODUCTS_DIR) if os.path.isdir(os.path.join(PRODUCTS_DIR, d)) and d != '.DS_Store')}", parse_mode="Markdown")
+        return
+    with open(listing_path) as f:
+        listing = json.load(f)
+    images = _load_existing_images(slug)
+    if not images:
+        await update.message.reply_text(f"❌ No images found for `{slug}` (need all 4).", parse_mode="Markdown")
+        return
+    msg = await update.message.reply_text(f"📤 Exporting *{listing['product_analysis']['product_name']}* to NeedKart folder...", parse_mode="Markdown")
+    try:
+        from local_export import export_product
+        nk_dir = export_product(listing, images)
+        from needkart_client import NeedKartClient
+        needkart_url, product_id = NeedKartClient().publish_listing(listing, images)
+        if needkart_url:
+            await msg.edit_text(f"✅ *Exported & republished!*\n\n`{nk_dir}`\n[View on NeedKart]({needkart_url})", parse_mode="Markdown")
+        else:
+            await msg.edit_text(f"⚠️ Exported to `{nk_dir}` but NeedKart publish failed. Check logs.", parse_mode="Markdown")
+    except Exception as e:
+        await msg.edit_text(f"❌ *Error:* {e}", parse_mode="Markdown")
+
+
+def _load_existing_images(slug):
+    """Check if images already exist for a product slug, return {key: (ext, data)} or None."""
+    img_keys = {
+        "1_lifestyle_usecase": "lifestyle_usecase",
+        "2_before_after": "before_after",
+        "3_how_to_use": "how_to_use",
+        "4_enhanced_hero": "enhanced_hero",
+    }
+    product_dir = os.path.join(PRODUCTS_DIR, slug)
+    if not os.path.isdir(product_dir):
+        return None
+    images = {}
+    for key, stem in img_keys.items():
+        found = False
+        for ext in ("png", "jpg", "jpeg"):
+            path = os.path.join(product_dir, f"{stem}.{ext}")
+            if os.path.exists(path):
+                with open(path, "rb") as f:
+                    data = f.read()
+                images[key] = (ext, data)
+                found = True
+                break
+        if not found:
+            return None
+    return images if len(images) == 4 else None
+
+
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     image_model = context.user_data.get("image_model", "gemini")
     caption = update.message.caption
@@ -85,30 +191,56 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         tmp_path = tmp.name
 
     try:
-        listing = listing_agent.analyze_image(tmp_path, product_hint=caption)
+        try:
+            listing = listing_agent.analyze_image(tmp_path, product_hint=caption)
+        except RuntimeError as e:
+            await msg.edit_text(
+                f"❌ *Analysis failed:* {e}\n\n"
+                f"All AI listing models were unavailable (timeout / rate-limited). "
+                f"Please try again later or use `/model` to switch image source.",
+                parse_mode="Markdown",
+            )
+            return
 
-        await msg.edit_text(
-            f"✅ Product identified: *{listing['product_analysis']['product_name']}*\n"
-            f"Category: {listing['product_analysis']['category']}\n\n"
-            f"🖼 Generating 4 images...",
-            parse_mode="Markdown",
-        )
+        slug = listing_agent.slugify(listing['product_analysis']['product_name'])
+        existing_images = _load_existing_images(slug)
 
-        images = listing_agent.generate_all_images(listing, tmp_path, image_model)
+        if existing_images:
+            images = existing_images
+            await msg.edit_text(
+                f"✅ Product identified: *{listing['product_analysis']['product_name']}*\n"
+                f"📂 Found existing images — skipping generation\n\n"
+                f"📤 Exporting to NeedKart folder...",
+                parse_mode="Markdown",
+            )
+        else:
+            await msg.edit_text(
+                f"✅ Product identified: *{listing['product_analysis']['product_name']}*\n"
+                f"Category: {listing['product_analysis']['category']}\n\n"
+                f"🖼 Generating 4 images...",
+                parse_mode="Markdown",
+            )
+            images = listing_agent.generate_all_images(listing, tmp_path, image_model)
 
         await msg.edit_text("📦 Saving and preparing files...")
 
         out_dir = listing_agent.save_listing(listing, images)
 
-        # Publish to NeedKart
+        # Export to local NeedKart product folder
+        needkart_dir = None
+        try:
+            from local_export import export_product
+            await msg.edit_text("📤 Exporting to NeedKart folder...")
+            needkart_dir = export_product(listing, images)
+        except Exception as e:
+            print(f"    NeedKart export error: {e}", file=sys.stderr)
+
+        # Publish to NeedKart store
         needkart_url = None
         try:
             from needkart_client import NeedKartClient
-            client = NeedKartClient()
             await msg.edit_text("📤 Publishing to NeedKart...")
-            needkart_url, product_id = client.publish_listing(listing, images)
-            if needkart_url:
-                await msg.edit_text(f"✅ Published!\n{needkart_url}")
+            needkart_url, product_id = NeedKartClient().publish_listing(listing, images)
         except Exception as e:
             print(f"    NeedKart publish error: {e}", file=sys.stderr)
 
@@ -160,10 +292,11 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await msg.edit_text(
             f"✅ *Done!*\n\n"
             f"Product: {listing['product_analysis']['product_name']}\n"
-            f"Images generated: {image_count}/4\n"
-            f"Image source: {image_model}\n"
+            f"Images: {'loaded from cache' if existing_images else f'{image_count}/4 (new)'}\n"
+            f"Image source: {'cache' if existing_images else image_model}\n"
             f"Output: `{out_dir}`" +
-            (f"\n\n🛒 *NeedKart:* [View Product]({needkart_url})" if needkart_url else ""),
+            (f"\n\n📁 *NeedKart folder:* `{needkart_dir}`" if needkart_dir else "") +
+            (f"\n🛒 *NeedKart:* [View Product]({needkart_url})" if needkart_url else ""),
             parse_mode="Markdown",
         )
 
@@ -184,6 +317,9 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("model", set_model))
+    app.add_handler(CommandHandler("republish", republish))
+    app.add_handler(CommandHandler("flipkart", flipkart_status))
+    app.add_handler(CommandHandler("flipkart_status", flipkart_status))
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
 
     print("🤖 EcomListing Pro Telegram Bot is running...", file=sys.stderr)

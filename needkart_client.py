@@ -230,9 +230,9 @@ class NeedKartClient:
             shipping_profile_id = spid
             break
 
-        title = fields.get("product_title", analysis.get("product_name", "Product"))
+        title = str(fields.get("product_title", analysis.get("product_name", "Product")) or "")
         handle = slugify(title)[:60]
-        description = fields.get("description", "")
+        description = str(fields.get("description", "") or "")
         price_str = str(fields.get("selling_price", "499")).replace(",", "").replace("₹", "")
         mrp_str = str(fields.get("mrp", "999")).replace(",", "").replace("₹", "")
         try:
@@ -244,17 +244,19 @@ class NeedKartClient:
         except ValueError:
             mrp = price * 2
 
-        sku = fields.get("sku", f"NK-{handle.upper()}")
-        weight = fields.get("weight", "200")
-        if not isinstance(weight, str):
+        sku = str(fields.get("sku", f"NK-{handle.upper()}") or "")
+        weight = fields.get("weight")
+        if weight is None:
+            weight = "200"
+        else:
             weight = str(weight)
         try:
-            weight = int(weight.replace("g", "").replace("G", ""))
+            weight = int(weight.replace("g", "").replace("G", "").replace(" ", ""))
         except ValueError:
             weight = 200
 
         bullet_1 = fields.get("bullet_points", ["", "", "", "", ""])
-        bullet_text = "\n".join(f"- {b}" for b in bullet_1 if b)
+        bullet_text = "\n".join(f"- {b}" for b in bullet_1 if isinstance(b, str) and b)
 
         payload = {
             "title": title,
@@ -380,10 +382,6 @@ class NeedKartClient:
 
 
 def slugify(text):
-    s = text.lower().strip()
-    for ch in " -/\\":
-        s = s.replace(ch, "-")
-    s = "".join(c for c in s if c.isalnum() or c == "-")
-    while "--" in s:
-        s = s.replace("--", "-")
+    s = str(text).lower().strip()
+    s = re.sub(r'[^a-z0-9]+', '-', s)
     return s.strip("-")[:60]
