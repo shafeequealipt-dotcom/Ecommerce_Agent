@@ -8,11 +8,15 @@ Runs alongside the remote Admin API push. Layout:
         listing.json        full AI-generated listing
         keyword_research.json  live Amazon/Flipkart/Google searches + coverage report
         <platform>_listing.txt
-        images/             the generated images
+        image_prompts.md    ready-to-paste prompts for making the images by hand
+        reference.<ext>     the original product photo, to attach alongside each prompt
+        images/             the product images (generated, or dropped in by hand)
+        published.json      written by publish_local.py once the product is on the store
 """
 
 import json
 import os
+import shutil
 import sys
 
 from listing_agent import slugify
@@ -65,19 +69,65 @@ def build_product(listing, image_files):
     }
 
 
-def export_product(listing, images):
+IMAGE_EXTS = (".png", ".jpg", ".jpeg", ".webp")
+
+
+def list_images(product_dir):
+    """Image files in a product's images/ folder — hero first, then by name."""
+    img_dir = os.path.join(product_dir, "images")
+    if not os.path.isdir(img_dir):
+        return []
+    files = [f for f in os.listdir(img_dir) if f.lower().endswith(IMAGE_EXTS) and not f.startswith(".")]
+    return sorted(files, key=lambda f: ("hero" not in f.lower(), f.lower()))
+
+
+def write_image_prompts(listing, out_dir):
+    """Prompts for generating the images by hand (e.g. in ChatGPT), one block per image."""
+    from listing_agent import premium_image_prompt
+    name = listing.get("product_analysis", {}).get("product_name", "product")
+    lines = [
+        f"# Image prompts — {name}",
+        "",
+        "For each image: attach the product photo (`reference.*` in this folder), paste the prompt,",
+        "then save the result into `images/` with the file name shown.",
+        "",
+    ]
+    for key, info in listing.get("image_prompts", {}).items():
+        stem = IMAGE_NAMES.get(key, key)
+        prompt = premium_image_prompt(key, (info or {}).get("prompt", ""), name)
+        lines += [
+            f"## {stem}",
+            f"Save as: `images/{stem}.png`",
+            "",
+            "```",
+            f"Use the attached photo as the exact product reference. {prompt} No text in the image.",
+            "```",
+            "",
+        ]
+    path = os.path.join(out_dir, "image_prompts.md")
+    with open(path, "w") as f:
+        f.write("\n".join(lines))
+    return path
+
+
+def export_product(listing, images, ref_image_path=None):
     """Write the product folder. Returns its path."""
     name = listing.get("product_analysis", {}).get("product_name", "product")
     out_dir = os.path.join(PRODUCT_ROOT, slugify(name))
     img_dir = os.path.join(out_dir, "images")
     os.makedirs(img_dir, exist_ok=True)
 
-    image_files = []
     for key, (ext, data) in sorted(images.items()):
         fname = f"{IMAGE_NAMES.get(key, key)}.{ext}"
         with open(os.path.join(img_dir, fname), "wb") as f:
             f.write(data)
-        image_files.append(f"images/{fname}")
+    # Whatever is in images/ now — including files dropped in by hand on an earlier run
+    image_files = [f"images/{f}" for f in list_images(out_dir)]
+
+    if ref_image_path and os.path.isfile(ref_image_path):
+        ext = os.path.splitext(ref_image_path)[1].lower() or ".jpg"
+        shutil.copyfile(ref_image_path, os.path.join(out_dir, f"reference{ext}"))
+    write_image_prompts(listing, out_dir)
 
     with open(os.path.join(out_dir, "product.json"), "w") as f:
         json.dump(build_product(listing, image_files), f, indent=2, ensure_ascii=False)

@@ -872,7 +872,7 @@ def save_listing(listing, images):
 
 def main():
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} [--image-model <deapi|nvidia|gemini|pollinations>] [--hint <product-hint>] <product-image-path>", file=sys.stderr)
+        print(f"Usage: {sys.argv[0]} [--image-model <manual|deapi|nvidia|gemini|pollinations>] [--hint <product-hint>] <product-image-path>", file=sys.stderr)
         sys.exit(1)
 
     image_model = "deapi"
@@ -885,8 +885,8 @@ def main():
         if a == "--hint" and i + 1 < len(args):
             product_hint = args[i + 1]
 
-    if image_model not in ("deapi", "nvidia", "gemini", "pollinations"):
-        print(f"ERROR: invalid --image-model '{image_model}'. Use deapi, nvidia, gemini, or pollinations.", file=sys.stderr)
+    if image_model not in ("manual", "deapi", "nvidia", "gemini", "pollinations"):
+        print(f"ERROR: invalid --image-model '{image_model}'. Use manual, deapi, nvidia, gemini, or pollinations.", file=sys.stderr)
         sys.exit(1)
 
     if not os.path.isfile(image_path):
@@ -894,13 +894,20 @@ def main():
         sys.exit(1)
 
     listing = analyze_image(image_path, product_hint)
-    images = generate_all_images(listing, image_path, image_model)
+    # manual: images are made by hand from image_prompts.md, then published with publish_local.py
+    manual = image_model == "manual"
+    images = {} if manual else generate_all_images(listing, image_path, image_model)
     out_dir = save_listing(listing, images)
 
     from local_export import export_product
     print(f"\n  Phase 4: Exporting to NeedKart product folder...", file=sys.stderr)
-    nk_dir = export_product(listing, images)
+    nk_dir = export_product(listing, images, image_path)
     print(f"  NeedKart: {nk_dir}", file=sys.stderr)
+
+    if manual:
+        print(f"\n  Image prompts: {os.path.join(nk_dir, 'image_prompts.md')}", file=sys.stderr)
+        print(f"  Add images to {os.path.join(nk_dir, 'images')}/ then run: publish_local.py {os.path.basename(nk_dir)}", file=sys.stderr)
+        return
 
     print(f"\n  Phase 5: Publishing to NeedKart store...", file=sys.stderr)
     from needkart_client import NeedKartClient

@@ -17,7 +17,7 @@ if [[ ! -f "$SSH_KEY" ]]; then
 fi
 
 mkdir -p "$LOCAL_DIR"
-rsync -az --itemize-changes "$@" \
+rsync -az --update --itemize-changes "$@" \
   -e "ssh -i \"$SSH_KEY\" -o BatchMode=yes -o ConnectTimeout=15" \
   "$VM_HOST:$VM_DIR" "$LOCAL_DIR/"
 echo "sync_products: $(date '+%Y-%m-%d %H:%M:%S') synced into $LOCAL_DIR"

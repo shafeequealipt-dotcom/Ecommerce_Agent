@@ -38,7 +38,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Commands:\n"
         "/start — this message\n"
         "/help — usage guide\n"
-        "/model — set image model (gemini / pollinations / nvidia / deapi)\n"
+        "/model — set image source (manual / gemini / pollinations / nvidia / deapi)\n"
         "/republish <slug> — re-export a saved product to the NeedKart folder and republish it without re-generating images\n"
         "/flipkart — check Flipkart API / auth status",
         parse_mode="Markdown",
@@ -61,13 +61,13 @@ async def set_model(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not args:
         await update.message.reply_text(
             "Usage: /model <name>\n\n"
-            "Options: deapi (default), nvidia, gemini, pollinations"
+            "Options: manual (default — you make the images from the prompts), gemini, nvidia, deapi, pollinations"
         )
         return
     model = args[0].lower()
-    if model not in ("deapi", "nvidia", "gemini", "pollinations"):
+    if model not in ("manual", "deapi", "nvidia", "gemini", "pollinations"):
         await update.message.reply_text(
-            f"Invalid model '{model}'. Choose: deapi, nvidia, gemini, pollinations"
+            f"Invalid model '{model}'. Choose: manual, deapi, nvidia, gemini, pollinations"
         )
         return
     context.user_data["image_model"] = model
@@ -176,8 +176,38 @@ def _load_existing_images(slug):
     return images if len(images) == 4 else None
 
 
+async def _manual_flow(update, msg, listing, photo_path):
+    """Listing only: save it, export the product folder, and send the image prompts to make by hand."""
+    from local_export import export_product
+    name = listing['product_analysis']['product_name']
+    listing_agent.save_listing(listing, {})
+    nk_dir = export_product(listing, {}, photo_path)
+
+    with open(os.path.join(nk_dir, "listing.json"), "rb") as f:
+        await update.message.reply_document(document=f, filename="listing.json", caption="📄 Complete listing JSON")
+    with open(os.path.join(nk_dir, "image_prompts.md"), "rb") as f:
+        await update.message.reply_document(document=f, filename="image_prompts.md", caption="🖼 Image prompts")
+    # Plain text so each prompt can be long-pressed and copied
+    with open(os.path.join(nk_dir, "image_prompts.md")) as f:
+        blocks = f.read().split("## ")[1:]
+    for block in blocks:
+        title, _, rest = block.partition("\n")
+        prompt = rest.split("```")[1].strip() if "```" in rest else rest.strip()
+        await update.message.reply_text(f"{title}\n\n{prompt}")
+
+    slug = os.path.basename(nk_dir)
+    await msg.edit_text(
+        f"✅ Listing ready: {name}\n\n"
+        f"Folder: product/{slug}/\n"
+        f"1. Attach the product photo and run each prompt above\n"
+        f"2. Save the images into product/{slug}/images/ on the Mac\n"
+        f"3. Publish from the Mac: publish_local.py {slug}\n\n"
+        f"Not published yet — waiting for images."
+    )
+
+
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    image_model = context.user_data.get("image_model", "gemini")
+    image_model = context.user_data.get("image_model", "manual")
     caption = update.message.caption
     hint_text = f"\n\n💡 *Hint:* {caption}" if caption else ""
     msg = await update.message.reply_text(
@@ -200,6 +230,10 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Please try again later or use `/model` to switch image source.",
                 parse_mode="Markdown",
             )
+            return
+
+        if image_model == "manual":
+            await _manual_flow(update, msg, listing, tmp_path)
             return
 
         slug = listing_agent.slugify(listing['product_analysis']['product_name'])
