@@ -25,11 +25,13 @@ NVIDIA_API_KEY = _load_env_key("NVIDIA_API_KEY")
 DE_API_KEY = _load_env_key("DE_API_KEY")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")
 
+# Free vision models first; the paid one is a last resort and needs OpenRouter credits
 LISTING_MODELS = [
-    "nvidia/nemotron-nano-12b-v2-vl:free",
-    "google/gemini-2.5-flash-lite-preview-09-2025",
-    "qwen/qwen3-vl-8b-instruct",
-    "meta-llama/llama-3.2-11b-vision-instruct",
+    "qwen/qwen3.8-27b:free",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free",
+    "qwen/qwen3.7-flash",
 ]
 GEMINI_IMAGE_MODEL = "google/gemini-3.1-flash-image"
 POLLINATIONS_URL = "https://image.pollinations.ai/prompt"
@@ -353,7 +355,7 @@ IMAGE_RULES = """IMAGE PROMPTS — art-direct like a premium brand campaign, 2-3
 - The product must look exactly like the reference photo: same pack, colours, label. No extra text, logos, badges or props that are not real."""
 
 
-def _vision_json(system_prompt, user_prompt, img_b64, mime, max_tokens=8192, temperature=0.7):
+def _vision_json(system_prompt, user_prompt, img_b64, mime, max_tokens=4500, temperature=0.7):
     """Send image + prompt through the listing model chain; return parsed JSON. Raises RuntimeError if all fail."""
     last_error = None
     for model in LISTING_MODELS:
@@ -368,6 +370,8 @@ def _vision_json(system_prompt, user_prompt, img_b64, mime, max_tokens=8192, tem
             ],
             "temperature": temperature,
             "max_tokens": max_tokens,
+            # Thinking tokens eat the output budget and leave the JSON truncated
+            "reasoning": {"enabled": False},
         }
 
         code = 0
@@ -381,6 +385,7 @@ def _vision_json(system_prompt, user_prompt, img_b64, mime, max_tokens=8192, tem
                     time.sleep(wait)
                     continue
                 last_error = f"{model}: {result.get('_error_msg', 'failed')}" if result else "Request failed"
+                print(f"    -> {model}: HTTP {code} — {str(last_error)[:200]}", file=sys.stderr)
                 break
             if "choices" not in result:
                 last_error = f"{model}: no choices key"
