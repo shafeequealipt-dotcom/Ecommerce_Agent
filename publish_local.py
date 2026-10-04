@@ -8,6 +8,7 @@ Usage: publish_local.py --list            show every product folder and its stat
        publish_local.py --all             publish everything that has images and is unpublished
        publish_local.py <slug> [<slug>]   publish specific products
        add --force to publish again despite the marker (creates a second product if the first still exists)
+       add --no-sync to skip pulling new product folders from the bot VM first
 """
 
 import json
@@ -68,9 +69,28 @@ def publish(slug, force=False):
     return True
 
 
+def sync_from_vm():
+    """Pull new product folders from the bot VM first, so there is no separate sync step to remember."""
+    import subprocess
+    script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sync_products.sh")
+    if not os.path.isfile(script):
+        return
+    try:
+        result = subprocess.run([script], capture_output=True, text=True, timeout=120)
+        new = [l.split(" ", 1)[1].split("/")[0] for l in result.stdout.splitlines() if l.startswith("cd+++")]
+        if result.returncode != 0:
+            print(f"  sync from VM failed — showing what is already on this Mac ({result.stderr.strip()[-120:]})")
+        elif new:
+            print(f"  synced from VM: {', '.join(sorted(set(new)))}")
+    except Exception as e:
+        print(f"  sync from VM failed — showing what is already on this Mac ({e})")
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     flags = {a for a in sys.argv[1:] if a.startswith("--")}
+    if "--no-sync" not in flags:
+        sync_from_vm()
     if "--list" in flags or not (args or "--all" in flags):
         for slug in all_slugs():
             print(f"  {slug:<60} {state(slug)}")
