@@ -110,7 +110,7 @@ async def flipkart_status(update: Update, context: ContextTypes.DEFAULT_TYPE):
             lines.append("5. Or raise a ticket for *sandbox* access at seller portal")
         await msg.edit_text("\n".join(lines), parse_mode="Markdown", disable_web_page_preview=True)
     except Exception as e:
-        await msg.edit_text(f"❌ Flipkart check error: {e}", parse_mode="Markdown")
+        await msg.edit_text(f"❌ Flipkart check error: {e}")
 
 
 async def republish(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -146,7 +146,7 @@ async def republish(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await msg.edit_text(f"⚠️ Exported to `{nk_dir}` but NeedKart publish failed. Check logs.", parse_mode="Markdown")
     except Exception as e:
-        await msg.edit_text(f"❌ *Error:* {e}", parse_mode="Markdown")
+        await msg.edit_text(f"❌ Error: {e}")
 
 
 def _load_existing_images(slug):
@@ -226,10 +226,9 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
             listing = listing_agent.analyze_image(tmp_path, product_hint=caption)
         except RuntimeError as e:
             await msg.edit_text(
-                f"❌ *Analysis failed:* {e}\n\n"
-                f"All AI listing models were unavailable (timeout / rate-limited). "
-                f"Please try again later or use `/model` to switch image source.",
-                parse_mode="Markdown",
+                f"❌ Analysis failed: {e}\n\n"
+                f"All AI listing models were unavailable (timeout / rate-limited / out of credits). "
+                f"Please try again later."
             )
             return
 
@@ -338,8 +337,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         tb = traceback.format_exc()
         await msg.edit_text(
-            f"❌ *Error:* {e}\n\n```\n{tb[:1500]}\n```",
-            parse_mode="Markdown",
+            f"❌ Error: {e}\n\n{tb[-1500:]}",
         )
     finally:
         if os.path.exists(tmp_path):

@@ -28,7 +28,14 @@ GEMINI_API_KEY = _load_env_key("Gemini_API_Token") or _load_env_key("GEMINI_API_
 
 # Direct Gemini API (preferred when a key is set) — falls through to OpenRouter on any failure
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
-GEMINI_LISTING_MODELS = ["gemini-3.8-flash", "gemini-3.5-flash"]
+GEMINI_LISTING_MODELS = [
+    "dots-studio/dots-3-note-preview:free",
+    "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+    "openrouter/free",  # OpenRouter picks whichever free model is up
+    "qwen/qwen3.7-flash",
+]
 GEMINI_DIRECT_IMAGE_MODEL = "gemini-3.1-flash-image"
 
 # Free vision models first; the paid one is a last resort and needs OpenRouter credits
@@ -361,6 +368,7 @@ VALUE_RULES = """PERCEIVED VALUE — write like a premium brand (think how Apple
 - Specifics beat superlatives: "80 wipes — about three months of daily use" beats "long lasting".
 - Justify the price: cost-per-use, what it replaces, time saved, what it protects (e.g. the shoes it keeps new). Fill brand_positioning.price_justification with 3 such reasons and weave them into the description.
 - brand_positioning.core_promise = the single benefit everything else supports. tagline = ≤6 words.
+- Brand: use only a brand printed on the product or given in the hint. Otherwise leave brand empty and keep it out of titles — never invent one, and never use your own name ("EcomListing Pro") as a brand.
 - Honesty is non-negotiable: do NOT invent certifications, awards, clinical claims, test results, ratings, or "dermatologist/lab tested" unless visible on the pack. Only state what the image or hint supports."""
 
 SEO_RULES = """SEO — every title and keyword field must be built from the REAL SHOPPER SEARCHES given above:
@@ -442,6 +450,12 @@ def _vision_json(system_prompt, user_prompt, img_b64, mime, max_tokens=4500, tem
             result = or_request(payload)
             if not result or result.get("_http_error"):
                 code = result.get("_http_error", 0) if result else 0
+                afford = re.search(r"can only afford (\d+)", str(result.get("_error_msg", ""))) if result else None
+                if code == 402 and afford and int(afford.group(1)) >= 3000 and attempt == 0:
+                    # Low balance: a listing fits in ~3k tokens, so ask for what the balance still covers
+                    payload["max_tokens"] = int(afford.group(1)) - 50
+                    print(f"    -> {model}: low credits, retrying with max_tokens={payload['max_tokens']}", file=sys.stderr)
+                    continue
                 if code == 429:
                     wait = 2 * (attempt + 1)
                     print(f"    -> {model}: rate limited, retrying in {wait}s (attempt {attempt+1}/3)", file=sys.stderr)
