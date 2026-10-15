@@ -28,22 +28,16 @@ GEMINI_API_KEY = _load_env_key("Gemini_API_Token") or _load_env_key("GEMINI_API_
 
 # Direct Gemini API (preferred when a key is set) — falls through to OpenRouter on any failure
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
-GEMINI_LISTING_MODELS = [
+GEMINI_LISTING_MODELS = ["gemini-3.8-flash", "gemini-3.5-flash"]
+GEMINI_DIRECT_IMAGE_MODEL = "gemini-3.1-flash-image"
+
+# Free vision models first; the paid one is a last resort and needs OpenRouter credits
+LISTING_MODELS = [
     "dots-studio/dots-3-note-preview:free",
     "google/gemma-4-31b-it:free",
     "google/gemma-4-26b-a4b-it:free",
     "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
     "openrouter/free",  # OpenRouter picks whichever free model is up
-    "qwen/qwen3.7-flash",
-]
-GEMINI_DIRECT_IMAGE_MODEL = "gemini-3.1-flash-image"
-
-# Free vision models first; the paid one is a last resort and needs OpenRouter credits
-LISTING_MODELS = [
-    "qwen/qwen3.8-27b:free",
-    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
-    "google/gemma-4-31b-it:free",
-    "google/gemma-4-26b-a4b-it:free",
     "qwen/qwen3.7-flash",
 ]
 GEMINI_IMAGE_MODEL = "google/gemini-3.1-flash-image"
